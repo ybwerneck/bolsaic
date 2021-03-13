@@ -41,7 +41,7 @@ int HashTable::getIndice(string data, int cod) {
     if (tabela[i] == NULL)
         return -1.;
 return i;
-   
+
 }
 NodeHT* HashTable::busca(string data, int cod){
     int i = getIndice(data, cod);
@@ -55,7 +55,6 @@ void HashTable::insereaux(NodeHT *item){
     int i; int j = 0;
     do{
         i=funct(item->data,item->codcidade,j++);
-       
 
     }
     while(tabela[i]!=NULL);
@@ -77,4 +76,28 @@ void HashTable::print(std::ostream &o){
         }
 }
 }
+
+int HashTable::comparaChaves(int ch1, int ch2){
+    if(tabela[ch1]->codcidade > tabela[ch2]->codcidade)
+        return 1;
+    else if(tabela[ch1]->codcidade == tabela[ch2]->codcidade){
+        if(tabela[ch1]->data > tabela[ch2]->data)
+            return 1;
+        else
+            return 0;
+    }
+    else
+        return 0;
+}
+
+int HashTable::getCidade(int i){
+    return tabela[i]->codcidade;
+}
+
+int HashTable::getCasos(int i){
+    return tabela[i]->casos;
+}
+
+
+
 

@@ -12,9 +12,9 @@ public:
     bool vazia(); // verifica se a árvore está vazia
     NoQArv* busca(coord val);
     void imprime(std::ostream&);
-    void insere(int estado, int cidade, std::string ncidade, double x, double y, int C);
+    void insere(int estado, int cidade, std::string ncidade, int x, int y, int C);
     void insere(NoQArv* n);
-    int getCarga() { return carga; }
+
     NoQArv* busca(int);
 
 
@@ -23,8 +23,8 @@ private:
     NoQArv* raiz; // ponteiro para o No raiz da árvore
     NoQArv* auxBusca(NoQArv *p, coord val);
     NoQArv* auxBusca(NoQArv* p, int );
-    int carga;
-    void auxInsere( NoQArv *val);
+
+    NoQArv* auxInsere(NoQArv *p, NoQArv *val);
     void imprimePorNivel(NoQArv* p, int nivel,std::ostream&o);
     NoQArv* libera(NoQArv *p);
 };

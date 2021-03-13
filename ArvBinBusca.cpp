@@ -13,133 +13,86 @@ bool ArvBinBusca::vazia()
     return raiz == NULL;
 }
 
-void ArvBinBusca::insere(int estado, int cidade, string ncidade, double x, double y, int C)
+void ArvBinBusca::insere(int estado, int cidade, string ncidade, int x, int y, int C)
 {
     NoQArv* val = new NoQArv(estado, cidade, ncidade, x, y, C);
-    auxInsere(val);
+  raiz=auxInsere(raiz,val);
 }
 void ArvBinBusca::insere(NoQArv* n)
 {
     NoQArv* val = new NoQArv(n);
-    auxInsere( val);
+    raiz=auxInsere(raiz, val);
 }
 
-void ArvBinBusca::auxInsere(NoQArv *valu)
+NoQArv* ArvBinBusca::auxInsere(NoQArv *p, NoQArv *valu)
 {
-    NoQArv* k = raiz;
-
-    if (raiz == NULL)
-        raiz = valu;
-    else
+    if(p == NULL)
     {
-        while (k != NULL)
-        {
-            if (k->getCoord().x < valu->getCoord().x)
-                if (k->getCoord().y < valu->getCoord().y)
-                    if (k->getSw() != NULL)
-                        k = k->getSw();
-                    else
-                    {
-                        k->setSw(valu);
-                        break;
-                    }
-                else if (k->getNw() != NULL)
-                    k = k->getNw();
-                else
-                {
-                    k->setNw(valu);
+        p = valu;
 
-                    break;
-                }
-            else if (k->getCoord().y < valu->getCoord().y)
-                if (k->getSe() != NULL)
-                    k = k->getSe();
-                else
-                {
-                    k->setSe(valu);
-                    break;
-                }
-            else if (k->getNe() != NULL)
-                k = k->getNe();
-            else
-            {
-                k->setNe(valu);
-                break;
-            }
-        }
     }
+    else if(valu->getCoord().x < p->getCoord().x)
+            if(valu->getCoord().y < p->getCoord().y)
+                p->setNw(auxInsere(p->getSw(), valu));
+            else
+                p->setSw(auxInsere(p->getNw(), valu));
+    else
+            if(valu->getCoord().y < p->getCoord().y)
+               p->setNe(auxInsere(p->getNe(), valu));
+            else
+                p->setSe(auxInsere(p->getSe(), valu));
+
+    return p;
 }
 
-
-NoQArv* ArvBinBusca::busca(int codC)
+NoQArv* ArvBinBusca::busca(coord val)
 {
+    return auxBusca(raiz, val);
+}
+NoQArv* ArvBinBusca::busca(int codC) {
     return auxBusca(raiz, codC);
 
 }
 
-NoQArv* ArvBinBusca::auxBusca(NoQArv*p,int codC)
-{
+NoQArv* ArvBinBusca::auxBusca(NoQArv*p,int codC) {
     if (p == NULL)
         return NULL;
 
     if (p->getCodC() == codC)
         return p;
     NoQArv* aux;
-    aux=auxBusca(p->getSe(), codC);
-    if (aux != NULL)
-        return aux;
-    aux = auxBusca(p->getNe(), codC);
-    if (aux != NULL)
-        return aux;
+            aux=auxBusca(p->getSe(), codC);
+            if (aux != NULL)
+                return aux;
+            aux = auxBusca(p->getNe(), codC);
+            if (aux != NULL)
+                return aux;
 
-    aux = auxBusca(p->getSw(), codC);
-    if (aux != NULL)
-        return aux;
+            aux = auxBusca(p->getSw(), codC);
+            if (aux != NULL)
+                return aux;
 
-    aux = auxBusca(p->getNw(), codC);
-    if (aux != NULL)
-        return aux;
+
+            aux = auxBusca(p->getNw(), codC);
+            if (aux != NULL)
+                return aux;
 }
-NoQArv* ArvBinBusca::busca(coord val)
+NoQArv* ArvBinBusca::auxBusca(NoQArv *p, coord val)
 {
-
-    NoQArv* k=raiz;
-    while (k != NULL)
-    {
-        if (k->getCoord().x < val.x)
-            if (k->getCoord().y < val.y)
-                if (!(k->getCoord() == val))
-                    k = k->getSw();
-                else
-                {
-                    return k;
-                    
-                }
-            else if (!(k->getCoord() == val))
-                k = k->getNw();
-            else
-            {
-                return k;
-
-                
-            }
-        else if (k->getCoord().y < val.y)
-            if (!(k->getCoord() == val))
-                k = k->getSe();
-            else
-            {
-                return k;
-                
-            }
-        else if (!(k->getCoord() ==val))
-            k = k->getNe();
-        else
-        {
-            return k;
-        }
+    if(p == NULL)
         return NULL;
-    }
-
+    else if(p->getCoord() == val)
+        return p;
+    else if(val.x < p->getCoord().x)
+            if(val.y < p->getCoord().y)
+                auxBusca(p->getSe(),val);
+            else
+                auxBusca(p->getNe(),val);
+    else
+            if(val.y < p->getCoord().y)
+                auxBusca(p->getSw(),val);
+            else
+                auxBusca(p->getNw(),val);
 
 }
 
@@ -157,19 +110,19 @@ void ArvBinBusca::imprimePorNivel(NoQArv *p, int nivel, std::ostream& o)
         o << "(" << nivel << ")";
         for(int i = 1; i <= nivel; i++)
             o << "--";
-        o << p->toString() << endl;
+       o << p->toString() << endl;
 
         if(p->getNe()!=NULL)
-            o<<endl<<"NE";
+        o<<endl<<"NE";
         imprimePorNivel(p->getNe(), nivel+1,o);
         if(p->getNw()!=NULL)
-            o<<endl<<"NW";
+        o<<endl<<"NW";
         imprimePorNivel(p->getNw(), nivel+1,o);
         if(p->getSe()!=NULL)
-            o<<endl<<"SE";
+        o<<endl<<"SE";
         imprimePorNivel(p->getSe(), nivel+1,o);
         if(p->getSw()!=NULL)
-            o<<endl<<"SW";
+        o<<endl<<"SW";
         imprimePorNivel(p->getSw(), nivel+1,o);
 
     }
@@ -188,7 +141,7 @@ NoQArv* ArvBinBusca::libera(NoQArv *p)
         p->setNw(libera(p->getSe()));
         p->setSw(libera(p->getSe()));
         p->setSe(libera(p->getSe()));
-        delete p;
+       delete p;
         p = NULL;
     }
     return p;

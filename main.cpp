@@ -6,101 +6,30 @@
 #include <string.h>
 #include "ArvBinBusca.h"
 #include "hash.h"
+#include "Arquivo.h"
 #include <sstream>
 #include <stdlib.h>
 #include "ArvoreAVL.h"
 #include "ArvoreB.h"
 #include <time.h>       /* time */
-
 #include <random>
 
 using namespace std;
-int leArqProcessado(HashTable* ht, string endr,int n){
-    ifstream arq(endr);
-    if(!arq.is_open())
-        return -1;
-    string str;
-    int i=0;
-    getline(arq, str);
-    while(getline(arq,str))
-    {
 
-      char *subdado;
-      subdado = strtok( &str[0], ",");
-      string data=subdado;
-      subdado = strtok( NULL, ",");
-      string estado= subdado;
-      subdado = strtok( NULL, ",");
-      string cidade= subdado;
-      subdado = strtok( NULL, ",");
-      int cod= atoi(subdado);
-      subdado = strtok( NULL, ",");
-      int casos= atoi(subdado);
-      subdado = strtok( NULL, ",");
-      int  mortes= atoi(subdado);
-      ht->insere(cod,data,cidade,estado,casos,mortes);
-        if(i++>n && n!=-1)
-            break;
-
-    }
-    return 0;
-
-}
-int leArqCord(ArvBinBusca* ht, string endr, int n) {
-    ifstream arq(endr);
-    if (!arq.is_open())
-        return -1;
-    string str;
-    int i = 0;
-    getline(arq, str);
-
-    while (getline(arq, str))
-    {
-
-        char* subdado;
-        subdado = strtok(&str[0], ",");
-        int estado = atoi(subdado);
-        subdado = strtok(NULL, ",");
-        int cidade = atoi(subdado)/10;
-        subdado = strtok(NULL, ",");
-        string nome = subdado;
-        subdado = strtok(NULL, ",");
-        double x = atof(subdado);
-        subdado = strtok(NULL, ",");
-        double  y = atof(subdado);
-        subdado = strtok(NULL, ",");
-        int  cap = atoi(subdado);
-        ht->insere(estado,  cidade,nome, x,y,cap);
-        if (i++ > n && n != -1)
-            break;
-    }
-    cout<<ht->getCarga();
-    return 0;
-
-}
 int random(int min, int max) {
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    std::uniform_real_distribution<> distribution(min, max);
-
-    //generating a random integer:
-    int x = distribution(gen);
-    
-    /* unsigned long x;
+    unsigned long x;
     x = rand();
     x <<= 15;
     x ^= rand();
     x %= max;
-    */
+
     return x;
 }
 
 
 NodeHT* getRandomValue(HashTable* ht){
     srand(time(NULL));
-
 
     int i = 0, max = ht->getTam();
     do{
@@ -110,11 +39,21 @@ NodeHT* getRandomValue(HashTable* ht){
     NodeHT* n= ht->operator[](i);
     return n;
 }
+
+int hashAleatorio(HashTable* ht){
+    srand(time(NULL));
+    int i = 0, max = ht->getTam();
+    do{
+        i = random(0, max);
+    } while(ht->operator[](i)==NULL);
+    return i;
+}
+
 void teste(int n,int op,HashTable* dados,ArvBinBusca*loc){
 
     ofstream filestream("filename.txt");
-    //  loc->imprime(filestream);
-        switch (op) {
+
+    switch (op) {
     case 1: {
         HashTable h(n + n / 20);
 
@@ -152,18 +91,13 @@ void teste(int n,int op,HashTable* dados,ArvBinBusca*loc){
             do {
                 m = (getRandomValue(dados));
                na = loc->busca(m->codcidade);
-               if(na==nullptr)
-                std::cout<<"N="<<i<<"C="<<m->codcidade<<std::endl;
-               std::cout << "N=" << i << "C=" << m->codcidade << std::endl;
-            } while (arv.busca(m->codcidade)!=NULL || na==nullptr);
 
+            } while (arv.busca(m->codcidade)==NULL);
 
             arv.insere(na);
         }
 
-
         arv.imprime((n < 20) ? cout : filestream);
-
         break;
     }
 
@@ -178,7 +112,6 @@ void teste(int n,int op,HashTable* dados,ArvBinBusca*loc){
                 m = (getRandomValue(dados));
 
             } while (arv.busca(m->codcidade));
-
             arv.insere(m->codcidade);
         }
         arv.imprime((n < 20) ? cout : filestream);
@@ -186,16 +119,44 @@ void teste(int n,int op,HashTable* dados,ArvBinBusca*loc){
         break;
     }
     }
+}
 
+void analiseBusca(int n, HashTable* h, int codCidade){
+    ArvoreAVL avl(h); ArvoreB bMenor(20,h); ArvoreB bMaior(200,h);
+
+        for(int t=0;t<5;t++){   // 5 diferentes conjuntos
+            for (int i = 0; i < n; i++) {
+            avl.insere(hashAleatorio(h));
+            bMenor.insere(hashAleatorio(h));
+            bMaior.insere(hashAleatorio(h));
+        }
+        //BUSCA S1
+        cout<< avl.busca(codCidade);
+        cout<< bMenor.busca(codCidade);
+        cout<< bMenor.busca(codCidade);
+
+        //FALTA BUSCAS2
+
+        }
 
 }
+
+
+
 int main()
 {
-
-    HashTable* ht=new HashTable(2000069);
+    Arquivo arq;
+    HashTable* ht=new HashTable(200069);
     ArvBinBusca* Q=new ArvBinBusca ();
-    leArqProcessado(ht,"processado.csv",50000);
-    leArqCord(Q, "coordenadas.csv", -1);
-    teste(50, 3, ht, Q);
+    arq.leArqProcessado(ht,"processado.csv",100000);
+    arq.leArqCord(Q, "coordenadas.csv", -1);
+
+    analiseBusca(500, ht, 509786);
+
+   // teste(50, 1, ht, Q);
+  //  teste(50, 2, ht, Q);
+   // teste(50,4,ht,Q); */
+
     return 0;
 }
+

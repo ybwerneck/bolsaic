@@ -2,8 +2,8 @@
 #define COORDENADA_H_INCLUDED
 
 struct coord{
-    double x=NULL;
-    double y=NULL;
+    int x=NULL;
+    int y=NULL;
 
     bool operator ==(coord b){
     return(x==b.x&&y==b.y);
@@ -13,7 +13,6 @@ struct coord{
         y=b.y;
     }
 };
-
 typedef struct coord coord;
 
 

@@ -12,6 +12,9 @@ class HashTable
 public:
     int getTam() { return tam; }
     int getIndice(string, int);
+    int getCidade(int i);
+    int getCasos(int i);
+    int comparaChaves(int ch1, int ch2);
     HashTable(int tam);
     void insere(int codcidade, string data, string cidade, string estado, int casos, int mortes) {
         NodeHT *n= new NodeHT(codcidade, data, cidade, estado, casos, mortes);
@@ -32,9 +35,10 @@ public:
 
 private:
     int tam;
+    int funct(string,int,int);
     NodeHT **tabela;
     void insereaux(NodeHT*);
-    int funct(string,int,int);
+
 
 
 };
