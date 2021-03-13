@@ -1,11 +1,19 @@
 #include <iostream>
 #include "ArvoreAVL.h"
+#include "NodeHT.h"
 
 using namespace std;
 
 ArvoreAVL::ArvoreAVL()
 {
     raiz = NULL;
+}
+
+ArvoreAVL::ArvoreAVL(HashTable *t)
+{
+    raiz = NULL;
+    this->h=t;
+
 }
 
 void ArvoreAVL::insere(int val)
@@ -23,7 +31,7 @@ NoArv* ArvoreAVL::auxInsere(NoArv *p, int val)
         p->setDir(NULL);
         p->setFator(0);
     }
-    else if(val < p->getInfo())
+    else if(h->comparaChaves(val, p->getInfo())==0)
         p->setEsq(auxInsere(p->getEsq(), val));
     else
         p->setDir(auxInsere(p->getDir(), val));
@@ -90,23 +98,25 @@ int ArvoreAVL::calculaAltura(NoArv *p)  // calcula altura do no
 }
 
 
-bool ArvoreAVL::busca(int val)
+int ArvoreAVL::busca(int val)
 {
     return auxBusca(raiz, val);
 }
 
-bool ArvoreAVL::auxBusca(NoArv *p, int val)
+int  ArvoreAVL::auxBusca(NoArv *p, int val)
 {
+    int casos=0;
     if(p == NULL)
-        return false;
-    else if(p->getInfo() == val)
-        return true;
-    else if(val < p->getInfo())
-        return auxBusca(p->getEsq(), val);
+        return 0;
+    else if(h->getCidade(p->getInfo()) == val){
+        casos+=h->getCasos(p->getInfo());
+    }
+    else if(val < h->getCidade(p->getInfo()))
+        casos= auxBusca(p->getEsq(), val);
     else
-        return auxBusca(p->getDir(), val);
+        casos= auxBusca(p->getDir(), val);
+        return casos;
 }
-
 
 void ArvoreAVL::imprime(std::ostream& o)
 {
@@ -125,4 +135,3 @@ void ArvoreAVL::imprimePorNivel(NoArv *p, int nivel,std::ostream &o)
         imprimePorNivel(p->getDir(), nivel+1,o);
     }
 }
-

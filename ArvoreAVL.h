@@ -1,21 +1,22 @@
 #ifndef ARVOREAVL_H_INCLUDED
 #define ARVOREAVL_H_INCLUDED
 #include "NoArv.h"
-#include <iostream>
-#include <fstream>
+#include "hash.h"
 
 class ArvoreAVL
 {
 public:
     ArvoreAVL();
-    bool busca(int val);
+    ArvoreAVL(HashTable *t);
+    int busca(int val);
     void insere(int val);
     void imprime(std::ostream&);
     int calculaAltura(NoArv *p);
 
 private:
+    HashTable* h;
     NoArv* raiz; // ponteiro para o No raiz da árvore
-    bool auxBusca(NoArv *p, int val);
+    int auxBusca(NoArv *p, int val);
     NoArv* auxInsere(NoArv *p, int val);
     void imprimePorNivel(NoArv* p, int nivel,std::ostream&);
     NoArv* rotSimplesEsq(NoArv* p);

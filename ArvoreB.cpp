@@ -10,12 +10,24 @@ ArvoreB::ArvoreB(int dMin)
     this->ordem=2*dMin;
 }
 
-bool ArvoreB::busca(int val)
+ArvoreB::ArvoreB(int dMin, HashTable *t)
+{
+    raiz = NULL;
+    this->ordem=2*dMin;
+    this->t=t;
+
+}
+
+int ArvoreB::busca(int val)
 {
     if(raiz==NULL)
-        return false;
-    else
-        return raiz->busca(val);
+        return 0;
+    else{
+        NoB* aux= new NoB(ordem,t);
+        aux=raiz;
+        return aux->busca(val);
+    }
+       // return raiz->busca(val);
 }
 
 void ArvoreB::insere(int val){
