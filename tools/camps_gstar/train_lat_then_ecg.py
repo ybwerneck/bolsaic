@@ -96,7 +96,8 @@ s_nodes = model.s_nodes
 
 N_LAT = int(os.environ.get('N_LAT', 5000))
 LR_LAT = float(os.environ.get('LR_LAT', 1e-3))
-ECG_LR = float(os.environ.get('ECG_LR', 1e-4))
+ECG_LRS = [float(x) for x in os.environ.get('ECG_LRS', '1e-4').split(',')]
+LOAD = os.environ.get('LOAD', '')          # saved lat_net.pt: skip the LAT training
 N_ITER = int(os.environ.get('N_ITER', 1000))
 
 
@@ -123,43 +124,57 @@ def score(tag):
 
 
 # ---- 1-2. train the network on the LAT loss; keep the best weights -------------
-torch.manual_seed(SEED)
-opt = torch.optim.Adam(model.net.parameters(), lr=LR_LAT)
-sch = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=N_LAT, eta_min=LR_LAT * 0.02)
-best, best_sd = 1e9, None
-model.eval()
-t0 = time.time()
-for it in range(N_LAT + 1):
-    opt.zero_grad(set_to_none=True)
-    L = lat_loss()
-    if float(L) < best:
-        best = float(L)
-        best_sd = {k: v.detach().clone() for k, v in model.state_dict().items()}
-    if it < N_LAT:
-        L.backward()
-        opt.step()
-        sch.step()
-    if it % 500 == 0:
-        print(f'[LAT training] it {it:5d}  loss {float(L):.3e}  (best {best:.3e})', flush=True)
-model.zero_grad(set_to_none=True)
-model.load_state_dict(best_sd, strict=False)
-torch.save(model.state_dict(), os.path.join(RUN, 'lat_net.pt'))
-print(f'[LAT training] {time.time() - t0:.0f} s', flush=True)
+row_init = score('random-init network (before LAT training)')
+if LOAD:
+    model.load_state_dict(torch.load(LOAD, map_location=DEVICE), strict=False)
+    torch.save(model.state_dict(), os.path.join(RUN, 'lat_net.pt'))
+else:
+    torch.manual_seed(SEED)
+    opt = torch.optim.Adam(model.net.parameters(), lr=LR_LAT)
+    sch = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=N_LAT, eta_min=LR_LAT * 0.02)
+    best, best_sd = 1e9, None
+    model.eval()
+    for it in range(N_LAT + 1):
+        opt.zero_grad(set_to_none=True)
+        L = lat_loss()
+        if float(L) < best:
+            best = float(L)
+            best_sd = {k: v.detach().clone() for k, v in model.state_dict().items()}
+        if it < N_LAT:
+            L.backward()
+            opt.step()
+            sch.step()
+    model.zero_grad(set_to_none=True)
+    model.load_state_dict(best_sd, strict=False)
+    torch.save(model.state_dict(), os.path.join(RUN, 'lat_net.pt'))
 row_lat = score('network after LAT training')
+start_sd = {k: v.detach().clone() for k, v in model.state_dict().items()}
 
-# ---- 3. the ECG inverse from those weights ---------------------------------
-loss = ECGMismatch(grid, op, ecg, V_true, n_project=0, keep_best=False)
-opt = torch.optim.Adam([q for q in model.parameters() if q.requires_grad], lr=ECG_LR)
-sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=N_ITER, eta_min=ECG_LR * 0.02)
-val = MapValidator(loss, tau_true, name='map', root=RUN, freq=N_ITER, dump_f=100000)
-tr = Trainer(n_epochs=N_ITER, model=model, device=str(DEVICE), adaptive=False, lr=ECG_LR,
-             print_steps=N_ITER, patience=None, optimizer=opt, scheduler=sched,
-             ckpt_path=os.path.join(RUN, 'model.pt'))
-tr.add_loss(loss, weigth=1)
-tr.add_validator(val, freq=N_ITER)
-tr.train()
-row_ecg = score('after ECG inverse')
-json.dump({'name': NAME, 'seed': SEED, 'n_lat': N_LAT, 'lr_lat': LR_LAT, 'ecg_lr': ECG_LR,
-           'n_iter': N_ITER, 'lat_net': row_lat, 'after_ecg': row_ecg},
+# ---- 3. the ECG inverse from those weights, one run per learning rate -------
+import hashlib
+def digest(sd):
+    h = hashlib.sha256()
+    for k in sorted(sd):
+        h.update(k.encode()); h.update(sd[k].detach().cpu().contiguous().numpy().tobytes())
+    return h.hexdigest()[:16]
+H0 = digest(start_sd)
+print('start weights', H0, flush=True)
+runs = []
+for lr in ECG_LRS:
+    model.load_state_dict(start_sd, strict=False)
+    assert digest(model.state_dict()) == H0
+    loss = ECGMismatch(grid, op, ecg, V_true, n_project=0, keep_best=False)
+    opt = torch.optim.Adam([q for q in model.parameters() if q.requires_grad], lr=lr)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=N_ITER, eta_min=lr * 0.02)
+    val = MapValidator(loss, tau_true, name=f'map_{lr:g}', root=RUN, freq=N_ITER, dump_f=100000)
+    tr = Trainer(n_epochs=N_ITER, model=model, device=str(DEVICE), adaptive=False, lr=lr,
+                 print_steps=N_ITER, patience=None, optimizer=opt, scheduler=sched,
+                 ckpt_path=os.path.join(RUN, f'model_{lr:g}.pt'))
+    tr.add_loss(loss, weigth=1)
+    tr.add_validator(val, freq=N_ITER)
+    tr.train()
+    runs.append({'lr': lr, **score(f'after ECG inverse, Adam {lr:g}')})
+json.dump({'name': NAME, 'seed': SEED, 'n_lat': N_LAT, 'lr_lat': LR_LAT, 'n_iter': N_ITER,
+           'start_hash': H0, 'init': row_init, 'lat_net': row_lat, 'after_ecg': runs},
           open(os.path.join(RUN, 'summary.json'), 'w'), indent=1, default=float)
 print('wrote', RUN)
