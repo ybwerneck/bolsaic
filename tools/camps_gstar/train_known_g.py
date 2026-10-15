@@ -37,7 +37,11 @@ N_REG = int(os.environ.get('N_REG', 3000))
 N_ITER = int(os.environ.get('N_ITER', 1000))
 EPS_SCREEN = float(os.environ.get('EPS_SCREEN', 2.0))
 BOX = float(os.environ.get('BOX', 0.01))
-WIDTH, LAYERS, N_EIG, LR, NT = 64, 4, 40, 5e-4, 100
+WIDTH, LAYERS, N_EIG, NT = 64, 4, 40, 100
+LR = float(os.environ.get('LR', 5e-4))
+OPT = os.environ.get('OPT', 'adam')            # adam | sgd
+ADAM_EPS = float(os.environ.get('ADAM_EPS', 1e-8))
+FREEZE_CV = os.environ.get('FREEZE_CV', '0') == '1'
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 SPEED_NAMES = ('fibre', 'cross', 'endo_dense', 'endo_sparse')
 RUN = open_run(__file__, f'knowng_{NAME}', header={'NAME': NAME, 'SIGMAS': SIGMAS,
@@ -103,7 +107,8 @@ def score():
         row.update(ecg=float(((V - V_syn) ** 2).mean() / (V_syn ** 2).mean()),
                    g_rms_all=float((gd - gt0).pow(2).mean().sqrt()),
                    g_rms_active=float((gd - gt0)[active].pow(2).mean().sqrt()),
-                   g_max_active=float((gd - gt0)[active].abs().max()))
+                   g_max_active=float((gd - gt0)[active].abs().max()),
+                   cv_rel_err=[float(c) / t - 1 for c, t in zip(model.cv, v_true)])
     return row
 
 
@@ -128,7 +133,11 @@ def run(tag, init):
             model.g_off.copy_(init - model.g_scale * model.net(s_nodes).squeeze(-1))
     r0 = score()
     loss = ECGMismatch(grid, op, ecg, V_syn, n_project=0, keep_best=False)
-    opt = torch.optim.Adam(model.parameters(), lr=LR)
+    if FREEZE_CV:
+        model.raw.requires_grad_(False)
+    params = [q for q in model.parameters() if q.requires_grad]
+    opt = (torch.optim.SGD(params, lr=LR) if OPT == 'sgd'
+           else torch.optim.Adam(params, lr=LR, eps=ADAM_EPS))
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=N_ITER, eta_min=LR * 0.02)
     val = MapValidator(loss, tau_syn, name=f'map_{tag}', root=RUN, freq=N_ITER, dump_f=1000)
     tr = Trainer(n_epochs=N_ITER, model=model, device=str(DEVICE), adaptive=False, lr=LR,
@@ -139,7 +148,7 @@ def run(tag, init):
     r1 = score()
     print(f"{tag:8s} start: ECG {r0['ecg']:.2e} corr {r0['corr']:.4f} MAE {r0['mae']:.2f} g_rms(active) {r0['g_rms_active']:.2f} | "
           f"end: ECG {r1['ecg']:.2e} corr {r1['corr']:.4f} MAE {r1['mae']:.2f} g_rms(active) {r1['g_rms_active']:.2f} "
-          f"g_max(active) {r1['g_max_active']:.2f}  [{time.time() - t0:.0f}s]", flush=True)
+          f"g_max(active) {r1['g_max_active']:.2f} cv_err% {[round(100*e,3) for e in r1['cv_rel_err']]} [{time.time() - t0:.0f}s]", flush=True)
     return {'tag': tag, 'start': r0, 'end': r1}
 
 
