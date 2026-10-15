@@ -1,0 +1,40 @@
+% Parte 5: DTI004, recuperacao completa, Metodo 1 x Camps.
+% problems/camps_dti004/outputs/set1/SUMMARY.md e truth5ti_s*_{m1,camps}.json
+% (2026-10-13); tabela e figura: scripts/deck_figs.py.
+
+\section{DTI004: recuperação completa}
+
+\begin{frame}{DTI004: Método 1 $\times$ Camps}
+  \small
+  \begin{itemize}\setlength{\itemsep}{0.3em}
+    \item Seis verdades, cada uma com 5 raízes em $t = 0$ entre os 601 candidatos do sistema de raízes simultâneas de Camps; transversalmente isotrópicas, sem camada rápida; velocidades a $\pm 1\%$ da verdade nos dois métodos.
+    \item \textbf{Camps}: SMC-ABC (código de Berg), 512 partículas; mapas por Dijkstra, pseudo-ECG próprio e discrepância com DTW; 16 núcleos (.114).
+    \item \textbf{Método 1}: 100 redes $\times$ 1000 passos; mapas por FIM, ECG pelo campo de chumbo; uma GPU.
+    \item Cada método contra a sua própria verdade (Dijkstra $\times$ FIM). O erro de ECG é a nossa métrica, não a que Camps otimiza.
+    \item Raízes: as candidatas ativas de cada partícula (Camps); as fontes com profundidade $\geq 1$ ms (Método 1).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Resultados por verdade}
+  \centering
+  \tiny
+  \setlength{\tabcolsep}{3.6pt}
+  \renewcommand{\arraystretch}{0.92}
+  \begin{tabular}{@{}llcccccccccc@{}}
+    \toprule
+    verdade & método & membros & \shortstack{tempo\\(min)} & corr & \shortstack{LAT MAE\\(ms)} & ECG & raízes & \shortstack{recall\\(cm)} & \shortstack{precisão\\(cm)} & \shortstack{$\geq 2$ raízes\\a $\leq 1$ cm}\\
+    \midrule
+\inputrows{sections/tab_dti004.tex}
+    \bottomrule
+  \end{tabular}\par
+  \medskip
+  {\tiny Medianas sobre os membros (partículas ou redes). recall: média, sobre as 5 raízes verdadeiras, da distância geodésica à raiz recuperada mais próxima;
+  precisão: média, sobre as raízes recuperadas, da distância à raiz verdadeira mais próxima. Última coluna: fração dos membros com ao menos 2 raízes verdadeiras a até 1 cm.}
+\end{frame}
+
+\begin{frame}{Todos os membros das seis verdades}
+  \centering
+  \includegraphics[width=\linewidth]{dti004_membros.png}\par
+  \smallskip
+  {\scriptsize Pontos: cada partícula (Camps) ou rede (Método 1) das seis verdades; círculos grandes: a mediana de cada verdade.}
+\end{frame}

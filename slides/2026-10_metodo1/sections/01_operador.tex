@@ -1,0 +1,45 @@
+% Parte 1: o operador Delta-PoIssoNN, como na abertura de 2026-10_progresso
+% (sections/01_operador.tex; equacoes e numeracao de "Problemas no Operador").
+
+\section{O operador $\Delta$-PoIssoNN}
+
+\begin{frame}{O operador $\Delta$-PoIssoNN}
+  \small
+  \renewcommand{\arraystretch}{2.4}
+  \begin{columns}[T,totalwidth=1.05\textwidth]
+    \begin{column}{0.51\textwidth}
+      \textbf{Definição}\\[-0.4em]
+      \begin{tabular}{@{}l@{\hspace{0.35em}}r@{\;}l@{\hspace{0.5em}}l@{}}
+        \nota{(1)} & $\|\U\nabla\varphi\|$ & $= 1$ & \nota{Eikonal anisotrópica}\\
+        \nota{(2)} & $\p$ & $:= \dfrac{\nabla\varphi}{\|\nabla\varphi\|}$ & \nota{gradiente unitário}\\
+        \nota{(3)} & $\nabla\varphi$ & $= \dfrac{\p}{\|\U\p\|}$ & \nota{da Eikonal e (2)}\\
+        \nota{(4)} & $\Delta\varphi$ & $= \nabla\cdot\left(\dfrac{\p}{\|\U\p\|}\right)$ & \nota{divergente de (3)}\\
+        \nota{(5)} & $\p(\boldsymbol{x})$ & $:= \mathrm{NN}\bigl(v(\boldsymbol{x});\boldsymbol{\theta}\bigr)$ & \nota{a rede}
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.53\textwidth}
+      \textbf{O operador:} (5) em (3)\\[-0.4em]
+      \begin{tabular}{@{}l@{\hspace{0.35em}}r@{\;}l@{\hspace{0.5em}}l@{}}
+        \nota{(6)} & $\nabla\varphi$ & $= \dfrac{\mathrm{NN}(v;\boldsymbol{\theta})}{\|\U\,\mathrm{NN}(v;\boldsymbol{\theta})\|}$ & \nota{(5) em (3)}\\
+        \nota{(7)} & $\Delta\varphi$ & $= \nabla\cdot\left[\dfrac{\mathrm{NN}(v;\boldsymbol{\theta})}{\|\U\,\mathrm{NN}(v;\boldsymbol{\theta})\|}\right]$ & \nota{divergente de (6)}\\
+        \nota{(8)} & $\Delta\varphi$ & $= f$ & \nota{$f$ pelo FEM}\\
+        \nota{(9)} & $K\boldsymbol{\varphi}$ & $= \boldsymbol{b}$ & \nota{Poisson, FEM}\\
+        \nota{(10)} & $\varphi$ & $\leftarrow \varphi - \min\varphi$ & \nota{remove a constante}
+      \end{tabular}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Por que o operador não é exato}
+  \small
+  Seja $\q := \p/\|\U\p\|$ \nota{(11)}. Para que $\p$ venha de um mapa de
+  ativação é preciso $\q = \nabla\varphi$, e portanto
+  \[
+    \nabla\times\left(\frac{\p}{\|\U\p\|}\right) = \boldsymbol{0}
+    \qquad\text{\nota{(17), integrabilidade}}
+  \]
+  O Poisson usa só $\nabla\cdot\q$: devolve um $\varphi$ mesmo com
+      $\nabla\times\q \neq \boldsymbol{0}$.
+  \vfill
+  {\scriptsize\color{gray} Demonstração Overleaf de 20/09.}
+\end{frame}

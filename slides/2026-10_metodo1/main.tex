@@ -1,0 +1,41 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme[progressbar=frametitle,numbering=fraction]{metropolis}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{tikz}
+\graphicspath{{figures/}}
+
+\newcommand{\U}{\boldsymbol{U}}
+\newcommand{\p}{\boldsymbol{p}}
+\newcommand{\q}{\boldsymbol{q}}
+\newcommand{\rr}{\boldsymbol{r}}
+\newcommand{\nota}[1]{{\scriptsize\color{gray}#1}}
+% linhas de tabela geradas por scripts/deck_figs.py: \@@input e expansivel,
+% entao funciona dentro de tabular (\input nao funciona antes de \midrule)
+\makeatletter\newcommand{\inputrows}[1]{\@@input #1 }\makeatother
+
+\title{Problema inverso do ECG: o Método 1}
+\subtitle{Fontes em $S$, solve blindado e $\Delta$-Poisson}
+\author{Yan B. Werneck}
+\date{Outubro de 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Roteiro}
+  \tableofcontents
+\end{frame}
+
+\input{sections/01_operador}
+\input{sections/02_metodo1}
+\input{sections/03_pac2}
+\input{sections/04_lat_primeiro}
+\input{sections/05_dti004}
+
+\end{document}
