@@ -184,6 +184,8 @@ def score():
         th = op.potential(p, *model.cv, n_project=0)
         V = ecg.from_tau(th)
         row = accuracy(th, tau_true)
+        Ll = float((((th - th.min()) - tau_true) ** 2).mean() / scale ** 2)
+        row.update(lat_loss=Ll, lat_rms=Ll ** 0.5 * scale)
         g = model.g()
         row.update(ecg=float(((V - V_true) ** 2).mean() / (V_true ** 2).mean()),
                    dg_active_rms=float((g - g0).pow(2)[active].mean().sqrt()),
