@@ -97,6 +97,8 @@ s_nodes = model.s_nodes
 N_LAT = int(os.environ.get('N_LAT', 5000))
 LR_LAT = float(os.environ.get('LR_LAT', 1e-3))
 ECG_LRS = [float(x) for x in os.environ.get('ECG_LRS', '1e-4').split(',')]
+FIT_G = os.environ.get('FIT_G', '')        # path of gstar.npz: stage 1 = fit the net to g* instead of the LAT
+N_FIT = int(os.environ.get('N_FIT', 20000))
 LOAD = os.environ.get('LOAD', '')          # saved lat_net.pt: skip the LAT training
 N_ITER = int(os.environ.get('N_ITER', 1000))
 
@@ -109,6 +111,7 @@ def lat_loss():
 
 
 STAGE = {}
+STAGE1 = 'network after fit to g*' if os.environ.get('FIT_G') else 'network after LAT training'
 
 
 def score(tag, g=None):
@@ -135,6 +138,25 @@ row_init = score('random-init network (before LAT training)')
 if LOAD:
     model.load_state_dict(torch.load(LOAD, map_location=DEVICE), strict=False)
     torch.save(model.state_dict(), os.path.join(RUN, 'lat_net.pt'))
+elif FIT_G:
+    gstar = torch.as_tensor(np.load(FIT_G)['gstar'], dtype=torch.float32, device=DEVICE)
+    act = (gstar - gstar.min()) < 10.0
+    y = (gstar / model.g_scale).detach()
+    wts = 1.0 + 50.0 * act.float()
+    torch.manual_seed(SEED)
+    opt = torch.optim.Adam(model.net.parameters(), lr=2e-3)
+    sch = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=N_FIT, eta_min=1e-6)
+    for it in range(N_FIT):
+        opt.zero_grad(set_to_none=True)
+        ((wts * (model.net(s_nodes).squeeze(-1) - y) ** 2).mean()).backward()
+        opt.step()
+        sch.step()
+    model.zero_grad(set_to_none=True)
+    with torch.no_grad():
+        e = model.g() - gstar
+    print(f'[fit to g*] |g - g*| on dominant candidates rms {float(e[act].pow(2).mean().sqrt()):.3f} ms, '
+          f'all S rms {float(e.pow(2).mean().sqrt()):.3f} ms', flush=True)
+    torch.save(model.state_dict(), os.path.join(RUN, 'lat_net.pt'))
 else:
     torch.manual_seed(SEED)
     opt = torch.optim.Adam(model.net.parameters(), lr=LR_LAT)
@@ -154,7 +176,7 @@ else:
     model.zero_grad(set_to_none=True)
     model.load_state_dict(best_sd, strict=False)
     torch.save(model.state_dict(), os.path.join(RUN, 'lat_net.pt'))
-row_lat = score('network after LAT training')
+row_lat = score(STAGE1)
 start_sd = {k: v.detach().clone() for k, v in model.state_dict().items()}
 
 # ---- 3. the ECG inverse from those weights, one run per learning rate -------

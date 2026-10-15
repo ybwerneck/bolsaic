@@ -18,12 +18,11 @@ tau_true = z['tau_true']; V_true = z['V_true']; t = z['t_grid']
 tau = {n: z[f'tau_{i}'] for i, n in enumerate(names)}
 V = {n: z[f'V_{i}'] for i, n in enumerate(names)}
 g = {n: z[f'g_{i}'] for i, n in enumerate(names)}
-rows = {'g0 = truth on S': sm['g0'], 'random-init network (before LAT training)': sm['init'],
-        'network after LAT training': sm['lat_net']}
+rows = {names[0]: sm['g0'], names[1]: sm['init'], names[2]: sm['lat_net']}
 for r in sm['after_ecg']:
     rows[f"after ECG inverse, Adam {r['lr']:g}"] = r
-SHORT = {'g0 = truth on S': '1. g0 = truth on S', 'random-init network (before LAT training)': '2. random-init net',
-         'network after LAT training': '3. net after LAT training'}
+SHORT = {names[0]: '1. g0 = truth on S', names[1]: '2. random-init net',
+         names[2]: '3. net after ' + ('fit to g*' if 'g*' in names[2] else 'LAT training')}
 for r in sm['after_ecg']:
     SHORT[f"after ECG inverse, Adam {r['lr']:g}"] = f"4. + ECG inverse, Adam {r['lr']:g}"
 INK, INK2, SURF, GRID = '#0b0b0b', '#52514e', '#fcfcfb', '#e6e5e1'
@@ -73,8 +72,8 @@ grid([tau[n] - tau[n].min() - tau_true for n in order], [mt(n) for n in order], 
 # ECG leads
 LEADS = ['I', 'II', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6']
 fig, axs = plt.subplots(2, 4, figsize=(11, 4.8), sharex=True)
-show = [('g0 = truth on S', BLUE, '1. g0 = truth on S'), ('network after LAT training', ORANGE, '3. net after LAT training'),
-        ('after ECG inverse, Adam 0.0001', AQUA, '4. + ECG inverse (Adam 1e-4)')]
+show = [(names[0], BLUE, SHORT[names[0]]), (names[2], ORANGE, SHORT[names[2]]),
+        (names[4], AQUA, '4. + ECG inverse (Adam 1e-4)')]
 for k, ax in enumerate(axs.ravel()):
     ax.plot(t, V_true[k], color=INK, lw=2.2, label='truth ECG')
     for n, c, lab in show:
