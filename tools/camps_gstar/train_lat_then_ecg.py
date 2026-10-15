@@ -108,22 +108,29 @@ def lat_loss():
     return ((t - tau_true) ** 2).mean() / scale ** 2
 
 
-def score(tag):
+STAGE = {}
+
+
+def score(tag, g=None):
     model.eval()
     with torch.no_grad():
-        p = model()
+        p = model() if g is None else model.field_from_g(g, *model.cv)
         th = op.potential(p, *model.cv, n_project=0)
         V = ecg.from_tau(th)
         a = accuracy(th, tau_true)
         L = float((((th - th.min()) - tau_true) ** 2).mean() / scale ** 2)
         row = {'lat_loss': L, 'lat_rms': L ** 0.5 * scale, 'mae': a['mae'], 'corr': a['corr'],
                'ecg': float(((V - V_true) ** 2).mean() / (V_true ** 2).mean())}
+        STAGE[tag] = {'tau': th.cpu().numpy(), 'V': V.cpu().numpy(),
+                      'g': (model.g() if g is None else g).detach().cpu().numpy()}
     print(f"[{tag}] LAT loss {L:.3e}  rms {row['lat_rms']:.2f} ms  MAE {row['mae']:.2f} ms  "
           f"corr {row['corr']:.4f}  ECG {row['ecg']:.3e}", flush=True)
     return row
 
 
 # ---- 1-2. train the network on the LAT loss; keep the best weights -------------
+g0 = tau_true[s_nodes].clone()
+row_g0 = score('g0 = truth on S', g0)
 row_init = score('random-init network (before LAT training)')
 if LOAD:
     model.load_state_dict(torch.load(LOAD, map_location=DEVICE), strict=False)
@@ -174,7 +181,13 @@ for lr in ECG_LRS:
     tr.add_validator(val, freq=N_ITER)
     tr.train()
     runs.append({'lr': lr, **score(f'after ECG inverse, Adam {lr:g}')})
+names = list(STAGE)
+np.savez_compressed(os.path.join(RUN, 'stages.npz'), names=np.array(names), tau_true=tau,
+                    V_true=V_true.cpu().numpy(), t_grid=t_grid, xyz=np.asarray(mesh.xyz),
+                    surf=np.unique(surface_faces(mesh.tet)), s_nodes=np.asarray(S), roots=roots,
+                    g_true=g0.cpu().numpy(),
+                    **{f'{k}_{i}': STAGE[n][k] for i, n in enumerate(names) for k in ('tau', 'V', 'g')})
 json.dump({'name': NAME, 'seed': SEED, 'n_lat': N_LAT, 'lr_lat': LR_LAT, 'n_iter': N_ITER,
-           'start_hash': H0, 'init': row_init, 'lat_net': row_lat, 'after_ecg': runs},
+           'start_hash': H0, 'g0': row_g0, 'init': row_init, 'lat_net': row_lat, 'after_ecg': runs},
           open(os.path.join(RUN, 'summary.json'), 'w'), indent=1, default=float)
 print('wrote', RUN)
