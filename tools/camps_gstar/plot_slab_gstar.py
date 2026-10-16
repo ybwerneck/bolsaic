@@ -26,6 +26,19 @@ def plane(f):
     return a
 
 
+SRC_C, NSRC_C = '#e8a200', '#7a3db8'
+
+
+def mark_s(ax, legend=False):
+    """S on the mid-height plane: wall y = 0 (true source) and wall x = 0 (in S, not a source)."""
+    ax.plot([xs[0], xs[-1]], [ys[0], ys[0]], color=SRC_C, lw=5, clip_on=False, solid_capstyle='butt',
+            label='S, wall y = 0 (true source)')
+    ax.plot([xs[0], xs[0]], [ys[0], ys[-1]], color=NSRC_C, lw=5, clip_on=False, solid_capstyle='butt',
+            label='S, wall x = 0 (not a source)')
+    if legend:
+        ax.legend(frameon=True, fontsize=8, loc='upper right', framealpha=0.9)
+
+
 ext = (xs[0], xs[-1], ys[0], ys[-1])
 cen = lambda f: (f - f.mean()) - (tau - tau.mean())
 e0, es = cen(p0), cen(ps)
@@ -38,6 +51,7 @@ for j, (f, ttl) in enumerate(((tau, 'truth $\\tau^*$ (plane wave from wall y = 0
                               (ps, '$\\varphi(g^*)$, LAT-optimal $g$'))):
     ax = fig.add_subplot(gs_[0, j]); row0.append(ax)
     im = ax.imshow(plane(f), origin='lower', extent=ext, cmap='Blues', vmin=0, vmax=tau.max(), aspect='equal')
+    mark_s(ax, legend=(j == 0))
     ax.set_title(ttl, loc='left', fontsize=10); ax.set_xlabel('x'); ax.set_ylabel('y')
 fig.colorbar(im, cax=fig.add_subplot(gs_[0, 3]), label='activation time (ms)')
 lim = max(np.abs(e0).max(), np.abs(es).max())
@@ -45,6 +59,7 @@ for j, (e, ttl) in enumerate(((e0, f'error, $g_0$: MAE {mae0:.3f} ms, max {np.ab
                               (es, f'error, $g^*$: MAE {maes:.3f} ms, max {np.abs(es).max():.2f} ms'))):
     ax = fig.add_subplot(gs_[1, j]); row1.append(ax)
     im2 = ax.imshow(plane(e), origin='lower', extent=ext, cmap='RdBu_r', vmin=-lim, vmax=lim, aspect='equal')
+    mark_s(ax)
     ax.set_title(ttl, loc='left', fontsize=10); ax.set_xlabel('x'); ax.set_ylabel('y')
 cbx = row1[0].inset_axes([0.0, -0.36, 2.25, 0.06]); fig.colorbar(im2, cax=cbx, orientation='horizontal', label='model - truth (ms, means removed); red = late, blue = early')
 ax = fig.add_subplot(gs_[1, 2])
@@ -59,13 +74,13 @@ for j, (sel, xax, lab) in enumerate(((np.isclose(vs[:, 1], 0) & np.isclose(vs[:,
     o = np.argsort(vs[sel, xax])
     ax.plot(vs[sel, xax][o], g0n[sel][o], '-', color=ORANGE, lw=2, label='$g_0 = \\tau^*$')
     ax.plot(vs[sel, xax][o], gsn[sel][o], '-', color=BLUE, lw=2, label='$g^*$')
-    ax.set_title(f'g on {lab} (mid-height)', loc='left', fontsize=10)
+    ax.set_title(f'g on {lab} (mid-height)', loc='left', fontsize=10, color=(SRC_C if j == 0 else NSRC_C))
     ax.set_xlabel('x' if xax == 0 else 'y'); ax.set_ylabel('g (ms, min 0)'); ax.grid(color=GRID, lw=.6)
     ax.legend(frameon=False)
 ax = fig.add_subplot(gs_[2, 2])
 d = gsn - g0n
 on_y0 = np.isclose(vs[:, 1], 0)
-ax.hist([d[on_y0], d[~on_y0]], bins=30, color=[ORANGE, BLUE], label=['wall y = 0', 'wall x = 0'], stacked=False)
+ax.hist([d[on_y0], d[~on_y0]], bins=30, color=[SRC_C, NSRC_C], label=['S, wall y = 0 (source)', 'S, wall x = 0 (not a source)'], stacked=False)
 ax.set_title('$g^* - g_0$ on every S node', loc='left', fontsize=10); ax.set_xlabel('ms'); ax.set_ylabel('nodes')
 ax.legend(frameon=False); ax.grid(color=GRID, lw=.6)
 fig.suptitle('Slab, walls case (49x25x5, eps 2 ms, Method 1): g0 = truth on S against the LAT-optimal g*; mid-height plane z = %.3f' % zm,
