@@ -19,6 +19,35 @@
   {\scriptsize\color{gray} A comparação não é controlada: caixa de $c$, taxa de aprendizado e penalidade de consistência diferem entre os braços.}
 \end{frame}
 
+% Teste direto, sem treino: tools/camps_gstar/fit_g_vent.py (.119, 2026-10-16),
+% outputs/vent_gstar_{recoverable,chamber}_e2; cv verdadeiro em todo o operador.
+\begin{frame}{Antes do inverso: o Método 1 com $g$ dado (sem treino)}
+  \footnotesize
+  Mesma verdade, $S$, eletrodos e ECG; Método 1 com as velocidades verdadeiras, $\varepsilon = 2$ ms, massa agrupada.
+  $g_0 = \tau^*$ em $S$; $g^*$ = $g$ livre em $S$ que minimiza o erro de LAT (Adam, 3000 passos, a partir de $g_0$).\par
+  \medskip
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{4.2pt}
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{@{}llccccccccc@{}}
+    \toprule
+    desenho & & \shortstack{perda\\de LAT} & \shortstack{LAT MAE\\(ms)} & \shortstack{LAT rms\\(ms)} & corr & eik & bacias & \shortstack{dispersão\\nas fontes (ms)} & \shortstack{nós\\$u \leq 0$} & ECG\\
+    \midrule
+    & verdade & -- & -- & -- & -- & 0,231 & 2 & 0,00 & -- & --\\
+    \midrule
+    recuperável & $g_0 = \tau^*$ em $S$ & $6{,}8 \cdot 10^{-3}$ & 1,311 & 1,583 & 0,9672 & 0,222 & 2 & 1,72 & 0\% & 0,299\\
+    \tiny ($S$ = endocárdios, 3201 nós) & $g^*$ (ajuste ao LAT) & $1{,}6 \cdot 10^{-4}$ & 0,216 & 0,285 & 0,9980 & 0,222 & 3 & 0,58 & 0\% & 0,032\\
+    \midrule
+    câmara & $g_0 = \tau^*$ em $S$ & $1{,}3 \cdot 10^{-1}$ & 5,161 & 6,152 & 0,4224 & 0,197 & 1 & 20,02 & 0\% & 1,282\\
+    \tiny ($S$ = lvendo, 1542 nós) & $g^*$ (ajuste ao LAT) & $4{,}2 \cdot 10^{-2}$ & 3,586 & 4,648 & 0,5279 & 0,208 & 4 & 12,04 & 0\% & 1,638\\
+    \bottomrule
+  \end{tabular}}\par
+  \medskip
+  {\tiny ECG: erro relativo do ECG contra o da verdade. dispersão nas fontes: $\max - \min$ de $\varphi$ nos 14 nós das duas fontes verdadeiras
+  (no desenho câmara, os 7 nós da fonte do VD estão fora de $S$). Demais colunas como na laje.}
+\end{frame}
+
 \begin{frame}[label=tab_camara]{Resultados: desenho câmara ($S$ = lvendo)}
   \centering
   \scriptsize

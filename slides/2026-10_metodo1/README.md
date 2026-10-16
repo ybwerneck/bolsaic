@@ -10,7 +10,7 @@ Figuras e linhas de tabela geradas: `python3 scripts/deck_figs.py` (lê `data/`)
 | `sections/01_operador.tex` | o operador Δ-PoIssoNN, Eq. (1)-(10) e (17), igual à abertura de `2026-10_progresso` |
 | `sections/02_metodo1.tex` | o Método 1, Eq. (18)-(22) e FEM (23)-(27), no mesmo estilo; por que -ε log u é um tempo; Método 0 x Método 1 |
 | `sections/025_laje.tex` | laje, caso paredes: Método 1 com $g_0 = \tau^*$ em S contra o $g^*$ ótimo para o LAT (só LAT); figuras `laje_gstar_*.png` por `scripts/slab_fig.py` (`data/slab/`) |
-| `sections/03_pac2.tex` | as duas tabelas de restrição de fonte (câmara, recuperável) com as linhas do Método 1 (de `reports/investigating_v2/tabelas.tex`, sem o Método 2) |
+| `sections/03_pac2.tex` | teste direto sem treino ($g_0 = \tau^*$ e $g^*$ ótimo para o LAT, com erro de ECG; `tools/camps_gstar/fit_g_vent.py`) e as duas tabelas de restrição de fonte (câmara, recuperável) com as linhas do Método 1 (de `reports/investigating_v2/tabelas.tex`, sem o Método 2) |
 | `sections/04_lat_primeiro.tex` | resultados de 15/10, DTI004 truth5ti_s1: início A (rede treinada no LAT) x início B (rede ajustada a g*), mapas, erro de LAT, sensibilidade ao início, teste com g conhecido |
 | `sections/05_dti004.tex` | DTI004, seis verdades: Método 1 x Camps (tabela por verdade e todos os membros) |
 | `sections/tab_*.tex` | linhas de tabela geradas por `scripts/deck_figs.py` |
