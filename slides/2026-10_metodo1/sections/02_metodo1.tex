@@ -1,19 +1,19 @@
 % Parte 2: o Metodo 1, no mesmo estilo do operador.
-% Fonte: nota do Poisson blindado (02/10/2026, reports/investigating_v2/
+% Fonte: nota do screened Poisson (02/10/2026, reports/investigating_v2/
 % yan_screened_poisson_plan.pdf), Secs. 3-6.2 e 8; codigo
 % core/screened.py, core/screened_front.py (ScreenedFront).
 % Numeracao continua depois de (17).
 
 \section{O Método 1}
 
-\begin{frame}{O Método 1: fontes em $S$, solve blindado, $\Delta$-Poisson}
+\begin{frame}{O Método 1: fontes em $S$, screened Poisson, $\Delta$-Poisson}
   \small
   \renewcommand{\arraystretch}{2.5}
   \textbf{Definição}\\[-0.4em]
   \begin{tabular}{@{}l@{\hspace{0.6em}}r@{\;}l@{\hspace{1.4em}}l@{}}
-    \nota{(18)} & $g(\boldsymbol{s})$ & $:= \mathrm{NN}\bigl(v(\boldsymbol{s});\boldsymbol{\theta}\bigr), \quad \boldsymbol{s}\in S$ & \nota{a rede, só nos candidatos $S$}\\
+    \nota{(18)} & $g(\boldsymbol{s})$ & $:= \mathrm{NN}\bigl(v(\boldsymbol{s});\boldsymbol{\theta}\bigr), \quad \boldsymbol{s}\in S$ & \nota{tempo de cada candidato em $S$}\\
     \nota{(19)} & $w(\boldsymbol{s})$ & $= \exp\!\left(-\dfrac{g(\boldsymbol{s}) - \min_S g}{\varepsilon}\right)$ & \nota{peso de cada fonte}\\
-    \nota{(20)} & $u - \varepsilon^2\,\nabla\cdot(A\nabla u)$ & $= B_S\,w, \quad A = \U^{T}\U$ & \nota{Poisson blindado (um passo de calor)}\\
+    \nota{(20)} & $u - \varepsilon^2\,\nabla\cdot(A\nabla u)$ & $= B_S\,w, \quad A = \U^{T}\U$ & \nota{screened Poisson}\\
     \nota{(21)} & $\q_g$ & $= -\dfrac{\nabla u}{\|\U\nabla u\|}$ & \nota{direção, no lugar de (11)}\\
     \nota{(22)} & $\Delta\varphi$ & $= \nabla\cdot\q_g$ & \nota{o operador, (8)--(10)}
   \end{tabular}
@@ -24,8 +24,8 @@
   \renewcommand{\arraystretch}{2.5}
   \textbf{Discretização}\\[-0.4em]
   \begin{tabular}{@{}l@{\hspace{0.6em}}r@{\;}l@{\hspace{1.4em}}l@{}}
-    \nota{(23)} & $H_\varepsilon$ & $= M + \varepsilon^2 K_A$ & \nota{$M$ massa agrupada, $K_A$ rigidez com $A$}\\
-    \nota{(24)} & $(\boldsymbol{b}_S)_s$ & $= a_s\, w_s, \quad s \in S$ & \nota{$a_s$: parte da área endocárdica do nó $s$}\\
+    \nota{(23)} & $H_\varepsilon$ & $= M + \varepsilon^2 K_A$ & \nota{$M$: lumped mass; $K_A$: rigidez com $A$}\\
+    \nota{(24)} & $(\boldsymbol{b}_S)_s$ & $= a_s\, w_s, \quad s \in S$ & \nota{$a_s$: área de superfície do nó $s$}\\
     \nota{(25)} & $H_\varepsilon\,\boldsymbol{u}$ & $= \boldsymbol{b}_S$ & \nota{SPD, sem constante livre}\\
     \nota{(26)} & $\q_g$ & $=$ (21) em cada elemento, média nos nós & \nota{como $\p$ no Método 0}\\
     \nota{(27)} & $K\boldsymbol{\varphi}$ & $= \boldsymbol{b}(\q_g), \quad \varphi \leftarrow \varphi - \min\varphi$ & \nota{(9)--(10), sem mudança}
@@ -39,42 +39,36 @@
     \nabla\psi^{T}\!A\,\nabla\psi \;-\; \varepsilon\,\nabla\cdot(A\nabla\psi) \;=\; 1
     \qquad\text{\nota{Eikonal viscosa; $\varepsilon \to 0$ dá (1)}}
   \]
-  Com a função de Green blindada $G_\varepsilon(\boldsymbol{x},\boldsymbol{s}) \approx C_\varepsilon\, e^{-T(\boldsymbol{s},\boldsymbol{x})/\varepsilon}$:
+  Com a função de Green do screened Poisson, $G_\varepsilon(\boldsymbol{x},\boldsymbol{s}) \approx C_\varepsilon\, e^{-T(\boldsymbol{s},\boldsymbol{x})/\varepsilon}$:
   \[
-    u(\boldsymbol{x}) \approx \int_S C_\varepsilon\,
-      \exp\!\left(-\frac{g(\boldsymbol{s}) + T(\boldsymbol{s},\boldsymbol{x})}{\varepsilon}\right) d\boldsymbol{s}
-    \quad\Longrightarrow\quad
-    -\varepsilon\log u(\boldsymbol{x}) \approx \operatorname*{min\,suave}_{\boldsymbol{s}\in S}\,
+    -\varepsilon\log u(\boldsymbol{x}) \approx \operatorname*{softmin}_{\boldsymbol{s}\in S}\,
       \bigl[g(\boldsymbol{s}) + T(\boldsymbol{s},\boldsymbol{x})\bigr]
   \]
-  \vspace{-0.8em}
-  \begin{itemize}\setlength{\itemsep}{0em}\footnotesize
-    \item cada candidato entra com o seu tempo $g(\boldsymbol{s})$: fontes com tempos diferentes, sem resolver a Eikonal;
-    \item só tempos relativos: $g + C$ multiplica $u$ por $e^{-C/\varepsilon}$, como (10);
-    \item a restrição de fonte é estrutural: a rede só existe em $S$, sem termo $L_S$;
-    \item $\q_g$ vem de um escalar, mas a normalização anisotrópica não garante $\nabla\times\q_g = \boldsymbol{0}$: o $\Delta$-Poisson continua.
+  \vspace{-0.6em}
+  \begin{itemize}\setlength{\itemsep}{0.1em}\footnotesize
+    \item cada candidato entra com o seu tempo $g(\boldsymbol{s})$, sem resolver a Eikonal;
+    \item só tempos relativos contam: $g + C$ multiplica $u$ por $e^{-C/\varepsilon}$;
+    \item as fontes ficam em $S$ por construção, sem termo $L_S$;
+    \item $\nabla\times\q_g = \boldsymbol{0}$ não é garantido (normalização anisotrópica): o $\Delta$-Poisson continua necessário.
   \end{itemize}
   \vspace{-0.3em}
-  {\scriptsize\color{gray} Nota do Poisson blindado (02/10), Secs. 4--6.2 e 8. Nos resultados:
-  $\varepsilon = 2$ ms, massa agrupada, $H_\varepsilon$ com as velocidades congeladas (fatorado uma vez).}
+  {\scriptsize\color{gray} Nos resultados: $\varepsilon = 2$ ms, lumped mass, $H_\varepsilon$ fatorado uma vez com as velocidades fixas.}
 \end{frame}
 
 % Custo: problems/purkinje_roots/scripts/bench_mesh.py (.114, RTX 4070 Ti
 % SUPER, 2026-10-08), via reports/investigating_v2/handoff_camps_papers.md.
-\begin{frame}{Método 0 e Método 1, lado a lado}
+\begin{frame}{Método 0 e Método 1}
   \small
   \renewcommand{\arraystretch}{1.35}
   \begin{tabular}{@{}p{0.25\textwidth}p{0.33\textwidth}p{0.36\textwidth}@{}}
     \toprule
     & Método 0 ($\Delta$-PoIssoNN) & Método 1 \\
     \midrule
-    a rede emite & $\p(\boldsymbol{x})$ em todo $\Omega$ (vetor) & $g(\boldsymbol{s})$ só em $S$ (escalar) \\
+    incógnita & $\p(\boldsymbol{x})$ em todo $\Omega$ (vetor) & $g(\boldsymbol{s})$ só em $S$ (escalar) \\
     fontes & emergem; precisam de um termo $L_S$ & só em $S$, por construção \\
     direção & $\p/\|\U\p\|$, qualquer campo & $-\nabla u/\|\U\nabla u\|$, de um escalar \\
-    solves por passo & 1 Poisson & 1 blindado + 1 Poisson \\
-    passo (pac2, 7387 nós) & 3,8 ms & 6,5 ms \\
+    solves por iteração & 1 Poisson & 1 screened + 1 Poisson \\
+    tempo por iteração (pac2) & 3,8 ms & 6,5 ms \\
     \bottomrule
-  \end{tabular}\par
-  \medskip
-  {\scriptsize\color{gray} Tempos: um passo de treino na RTX 4070 Ti SUPER (.114), $H_\varepsilon$ fatorado uma vez (\texttt{lu}).}
+  \end{tabular}
 \end{frame}

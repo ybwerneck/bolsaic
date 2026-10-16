@@ -67,8 +67,8 @@ for j, (e, ttl) in enumerate(((e0, f'erro, $g_0$: MAE {mae0:.3f} ms, máx {np.ab
 cbx = row1[0].inset_axes([0.0, -0.36, 2.25, 0.06]); fig.colorbar(im2, cax=cbx, orientation='horizontal', label='modelo - verdade (ms, médias removidas); vermelho = tarde, azul = cedo')
 ax = fig.add_subplot(gs_[1, 2])
 ax.semilogy(z['hist'], color=BLUE, lw=1.5)
-ax.set_title('perda de LAT no ajuste de g', loc='left', fontsize=12.5); ax.set_xlabel('passo de Adam (lr 0,1)')
-ax.set_ylabel('perda de LAT (log)'); ax.grid(color=GRID, lw=.6)
+ax.set_title('erro de LAT no ajuste de g', loc='left', fontsize=12.5); ax.set_xlabel('iteração')
+ax.set_ylabel('erro de LAT (log)'); ax.grid(color=GRID, lw=.6)
 vs = v[S]
 g0n, gsn = g0 - g0.min(), gs - gs.min()
 for j, (sel, xax, lab) in enumerate(((np.isclose(vs[:, 1], 0) & np.isclose(vs[:, 2], zm), 0, 'parede y = 0 (fonte), ao longo de x'),

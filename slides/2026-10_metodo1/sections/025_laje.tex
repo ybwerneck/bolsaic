@@ -1,49 +1,49 @@
-% Laje, caso "paredes" (problems/screened_poisson/slab_cases.py), Metodo 1 sem treino:
+% Slab, caso "walls" (problems/screened_poisson/slab_cases.py), Metodo 1 sem treino:
 % g0 = tau* em S contra o g* livre que minimiza o erro de LAT.
 % tools/camps_gstar/fit_g_slab.py (MESH 49,25,5, EPS 2; .119, 2026-10-16);
-% figuras: scripts/slab_fig.py (data/slab/gstar_slab.npz). So LAT: sem ECG na laje.
+% figuras: scripts/slab_fig.py (data/slab/gstar_slab.npz). So LAT: sem ECG no slab.
 
-\section{Laje: $g$ ótimo $\times$ verdade}
+\section{Slab: $g$ ótimo $\times$ verdade}
 
-\begin{frame}{Laje, caso paredes: $g_0 = \tau^*$ em $S$ $\times$ $g^*$ ótimo}
+\begin{frame}{Slab: $g_0 = \tau^*$ em $S$ $\times$ $g^*$ ótimo}
   \footnotesize
   \begin{itemize}\setlength{\itemsep}{0.1em}
-    \item Laje $2 \times 1 \times 0{,}15$, malha $49 \times 25 \times 5$ (6125 nós), fibra em $x$, $c = (0{,}052;\ 0{,}017)$ cm/ms.
-    \item $S$ = paredes $y = 0$ e $x = 0$ (365 nós). Fonte verdadeira: toda a parede $y = 0$ em $t = 0$ (onda plana); verdade exata.
-    \item Método 1 sem treino: $\varepsilon = 2$ ms, massa agrupada. $g_0 = \tau^*$ em $S$;
-      $g^*$ = $g$ livre em $S$ que minimiza o erro de LAT (Adam, 3000 passos, a partir de $g_0$).
+    \item Slab $2 \times 1 \times 0{,}15$ (6125 nós), fibra em $x$, $c = (0{,}052;\ 0{,}017)$ cm/ms.
+    \item $S$ = paredes $y = 0$ e $x = 0$ (365 nós). Fonte verdadeira: toda a parede $y = 0$ em $t = 0$.
+    \item Método 1 com as velocidades verdadeiras, $\varepsilon = 2$ ms. $g_0 = \tau^*$ em $S$;
+      $g^*$ = $g$ em $S$ que minimiza o erro de LAT, partindo de $g_0$.
   \end{itemize}
   \medskip
   \centering
   \scriptsize
-  \setlength{\tabcolsep}{5pt}
-  \begin{tabular}{@{}lcccccccc@{}}
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}lcccccc@{}}
     \toprule
-    & \shortstack{perda\\de LAT} & \shortstack{LAT MAE\\(ms)} & \shortstack{LAT rms\\(ms)} & corr & eik & bacias & \shortstack{dispersão\\na fonte (ms)} & \shortstack{nós\\$u \leq 0$}\\
+    & \shortstack{LAT MAE\\(ms)} & \shortstack{LAT rms\\(ms)} & corr & eik & basins & \shortstack{dispersão\\na fonte (ms)}\\
     \midrule
-    verdade & -- & -- & -- & -- & 0,000 & 1 & 0,00 & --\\
-    $g_0 = \tau^*$ em $S$ & $2{,}6 \cdot 10^{-4}$ & 0,214 & 0,286 & 0,99987 & 0,005 & 2 & 1,26 & 0\%\\
-    $g^*$ (ajuste ao LAT) & $8{,}2 \cdot 10^{-7}$ & 0,017 & 0,028 & 1,00000 & 0,004 & 15 & 0,19 & 0\%\\
+    verdade & -- & -- & -- & 0,000 & 1 & 0,00\\
+    $g_0 = \tau^*$ em $S$ & 0,214 & 0,286 & 0,99987 & 0,005 & 2 & 1,26\\
+    $g^*$ (ajuste ao LAT) & 0,017 & 0,028 & 1,00000 & 0,004 & 15 & 0,19\\
     \bottomrule
   \end{tabular}\par
   \medskip
-  {\tiny Só LAT (a laje não tem ECG aqui). MAE e rms com as médias removidas. eik: RMS de $\|\U\nabla\varphi\| - 1$.
-  bacias: mínimos locais do mapa. dispersão na fonte: $\max - \min$ de $\varphi$ na parede $y = 0$ (0 na verdade).}
+  {\tiny Só LAT. MAE e rms com as médias removidas. eik: RMS de $\|\U\nabla\varphi\| - 1$.
+  basins: mínimos locais do mapa. dispersão na fonte: $\max - \min$ de $\varphi$ na parede $y = 0$.}
 \end{frame}
 
-\begin{frame}{Laje: mapas e erro de LAT}
+\begin{frame}{Slab: mapas e erro de LAT}
   \centering
   \includegraphics[width=\linewidth]{laje_gstar_mapas.png}\par
   {\scriptsize Plano de meia altura. Amarelo: parte de $S$ que é fonte; roxo: parte de $S$ que não é fonte.}
 \end{frame}
 
-\begin{frame}{Laje: o que o ajuste muda em $g$}
+\begin{frame}{Slab: o que o ajuste muda em $g$}
   \centering
   \includegraphics[width=0.92\linewidth]{laje_gstar_g.png}\par
   \medskip
   \small
   \begin{itemize}\setlength{\itemsep}{0.2em}
-    \item Na parede $y = 0$ (a fonte), $g^*$ fica a 0,5--1 ms do nó mais cedo; até 3,6 ms no canto com a parede $x = 0$.
-    \item Na parede $x = 0$ (em $S$, mas não é fonte), $g^*$ fica 5--8 ms depois de $\tau^*$: com $g_0 = \tau^*$ esses nós injetam fonte quando a frente passa e adiantam o mapa junto à parede (até 1,1 ms).
+    \item Parede $y = 0$ (fonte): $g^*$ fica a 0,5--1 ms do nó mais cedo.
+    \item Parede $x = 0$ (em $S$, não é fonte): $g^*$ fica 5--8 ms depois de $\tau^*$. Com $g_0 = \tau^*$ esses nós disparam quando a frente passa e adiantam o mapa junto à parede.
   \end{itemize}
 \end{frame}

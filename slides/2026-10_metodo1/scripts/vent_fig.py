@@ -16,7 +16,7 @@ BLUE, ORANGE, SCOL, SRC = '#2a78d6', '#eb6834', '#7a3db8', '#e8a200'
 plt.rcParams.update({'font.size': 12, 'axes.labelcolor': INK2, 'xtick.color': INK2, 'ytick.color': INK2,
                      'axes.edgecolor': GRID})
 D = {k: np.load(os.path.join(HERE, 'data', 'vent', f'fields_vent_{k}.npz')) for k in ('recoverable', 'chamber')}
-NOME = {'recoverable': 'recuperável\n($S$ = endocárdios)', 'chamber': 'câmara\n($S$ = lvendo)'}
+NOME = {'recoverable': 'recoverable\n($S$ = endocárdios)', 'chamber': 'chamber\n($S$ = endocárdio VE)'}
 VIEW = (0, 2, 1)                                   # eixo horizontal, vertical, profundidade
 
 

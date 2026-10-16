@@ -81,8 +81,8 @@ def maps_figure(kind, fn):
         panels = [('verdade (FIM)', tau_true, None),
                   ('$g_0$ = verdade em $S$', st[names[0]]['tau'], rows[names[0]]),
                   ('rede no início', st[start]['tau'], rows[start]),
-                  ('+ inverso ECG, Adam 1e-4', st[ecg_key(1e-4)]['tau'], rows[ecg_key(1e-4)]),
-                  ('+ inverso ECG, Adam 5e-4', st[ecg_key(5e-4)]['tau'], rows[ecg_key(5e-4)])]
+                  ('+ inverso ECG, passo 1e-4', st[ecg_key(1e-4)]['tau'], rows[ecg_key(1e-4)]),
+                  ('+ inverso ECG, passo 5e-4', st[ecg_key(5e-4)]['tau'], rows[ecg_key(5e-4)])]
         for j, (ttl, tau, r) in enumerate(panels):
             ax = axs[i, j]
             if kind == 'lat':
@@ -117,7 +117,7 @@ with open(os.path.join(SEC, 'tab_hoje.tex'), 'w') as fh:
     fh.write('    \\midrule\n')
     fh.write(row_tex('rede no início', rA[nA[2]], rB[nB[2]]))
     for lr in KEEP_LR:
-        fh.write(row_tex(f'+ inverso ECG, Adam {LRTEX[lr]}', rA[ecg_key(lr)], rB[ecg_key(lr)]))
+        fh.write(row_tex(f'+ inverso ECG, passo {LRTEX[lr]}', rA[ecg_key(lr)], rB[ecg_key(lr)]))
 
 # ---------------------------------------------------------------- noise sweep
 R = json.load(open(os.path.join(DATA, 'noise_A.json'))) + json.load(open(os.path.join(DATA, 'noise_B.json')))
@@ -142,7 +142,7 @@ for ax, key, yl, lg in ((axs[0], 'ecg', 'erro do ECG (log)', True), (axs[1], 'ma
         for lr in KEEP_LR:
             c, ls, mk = STY[(lr, tag)]
             ax.plot(x, [med(tag, lr, s, 'end', key) for s in SIG], ls, color=c, marker=mk, lw=2, ms=6,
-                    mec='white', mew=1, label=f'início {tag}, Adam {fmt_e(lr)}')
+                    mec='white', mew=1, label=f'início {tag}, passo {fmt_e(lr)}')
     ax.set_xticks(x); ax.set_xticklabels(xt, fontsize=11)
     ax.set_xlabel('ruído $\\sigma$ (deslocamento de $g$)'); ax.set_ylabel(yl)
     ax.grid(color=GRID, lw=.6)
@@ -184,10 +184,10 @@ with open(os.path.join(SEC, 'tab_dti004.tex'), 'w') as fh:
 
 fig, axs = plt.subplots(1, 3, figsize=(12.5, 4.6), sharey=True)
 for ax, key, xl in ((axs[0], 'lat_mae', 'MAE do LAT contra a própria verdade (ms)'),
-                    (axs[1], 'recall', 'distância de recall (cm)'),
-                    (axs[2], 'precision', 'distância de precisão (cm)')):
+                    (axs[1], 'recall', 'distância verdade → recuperada (cm)'),
+                    (axs[2], 'precision', 'distância recuperada → verdade (cm)')):
     for m, c, lab, a in (('camps', ORANGE, 'Camps (SMC-ABC, 512 partículas)', .25),
-                         ('m1', BLUE, 'Método 1 (100 redes × 1000 passos)', .35)):
+                         ('m1', BLUE, 'Método 1 (100 inicializações)', .35)):
         xs = np.concatenate([[r[key] for r in M[(t, m)]['rows']] for t in TR])
         ys = np.concatenate([[r['ecg'] for r in M[(t, m)]['rows']] for t in TR])
         ax.scatter(xs, ys, s=7, color=c, alpha=a, lw=0, label=lab, rasterized=True)
