@@ -1,4 +1,4 @@
-"""Figure of fit_g_slab: truth, phi(g0), phi(g*), their errors, g on both walls, loss.
+"""Figure of fit_g_slab: truth, phi(g0), phi(g*), their errors, loss, g on both walls.
 
     python plot_slab_gstar.py results/slab/gstar_slab.npz results/slab/slab_walls_gstar.png
 """
@@ -77,12 +77,6 @@ for j, (sel, xax, lab) in enumerate(((np.isclose(vs[:, 1], 0) & np.isclose(vs[:,
     ax.set_title(f'g on {lab} (mid-height)', loc='left', fontsize=10, color=(SRC_C if j == 0 else NSRC_C))
     ax.set_xlabel('x' if xax == 0 else 'y'); ax.set_ylabel('g (ms, min 0)'); ax.grid(color=GRID, lw=.6)
     ax.legend(frameon=False)
-ax = fig.add_subplot(gs_[2, 2])
-d = gsn - g0n
-on_y0 = np.isclose(vs[:, 1], 0)
-ax.hist([d[on_y0], d[~on_y0]], bins=30, color=[SRC_C, NSRC_C], label=['S, wall y = 0 (source)', 'S, wall x = 0 (not a source)'], stacked=False)
-ax.set_title('$g^* - g_0$ on every S node', loc='left', fontsize=10); ax.set_xlabel('ms'); ax.set_ylabel('nodes')
-ax.legend(frameon=False); ax.grid(color=GRID, lw=.6)
 fig.suptitle('Slab, walls case (49x25x5, eps 2 ms, Method 1): g0 = truth on S against the LAT-optimal g*; mid-height plane z = %.3f' % zm,
              x=0.01, ha='left', fontsize=11.5)
 fig.savefig(out, dpi=140, bbox_inches='tight')
