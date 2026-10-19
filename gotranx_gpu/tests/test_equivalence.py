@@ -23,7 +23,9 @@ MODELS = ["fitzhughnagumo", "beeler_reuter_1977", "tentusscher_panfilov_2006_M_c
           "ORdmm_Land", "ToRORd_dyn_chloride"]
 SCHEMES = ["explicit_euler", "generalized_rush_larsen"]
 N, DT, T = 257, 0.01, 1.3
-RTOL, ATOL = 1e-10, 1e-12
+# numpy and torch round exp/pow differently in the last bits; on derivatives that are
+# differences of large fluxes (ToRORd) this shows up as ~1e-11 absolute
+RTOL, ATOL = 1e-10, 1e-10
 
 
 def _exec(code):
@@ -77,8 +79,11 @@ def test_torch_single_cell_and_grad(model):
     P = torch.as_tensor(p).requires_grad_(True)
     v = ns["rhs"](T, S, P)
     np.testing.assert_allclose(v.detach().numpy(), ref["rhs"][:, 0], rtol=RTOL, atol=ATOL)
-    v.sum().backward()
-    assert P.grad is not None and torch.isfinite(P.grad).all()
+    # gradients away from states that start at 0: e.g. the Land model's
+    # (CaTrpn/cat50)**ntm has no finite d/dntm (or d/dCaTrpn) at CaTrpn = 0
+    S = torch.where(S == 0, torch.full_like(S, 1e-3), S).requires_grad_(True)
+    ns["rhs"](T, S, P).sum().backward()
+    assert torch.isfinite(P.grad).all() and torch.isfinite(S.grad).all()
 
 
 def test_numba_cpu(model):
