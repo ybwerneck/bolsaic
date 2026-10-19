@@ -15,6 +15,7 @@ Contestants, each with the layout its code expects:
 Time per step: median of up to REPS steps (at least 3, stopping after ~3 s), GPU synchronised.
 Compile: gcc / nvcc wall time against numba's first call (CPU, CUDA) of the same scheme.
 Error: max relative deviation from numpy's step. Writes bench/native_<model>.json.
+ONLY=cuda_c,numba_cuda (say) runs just those and merges them into an existing JSON.
 """
 from __future__ import annotations
 
@@ -41,6 +42,11 @@ HERE = Path(__file__).resolve().parent
 ODEDIR = HERE.parent / "odefiles"
 SCHEME, DT, T, REPS, THREADS = "generalized_rush_larsen", 0.01, 0.0, 10, 128
 NTHREADS = os.cpu_count()
+ONLY = set(os.environ.get("ONLY", "").split(",")) - {""}
+
+
+def want(key: str) -> bool:
+    return not ONLY or key in ONLY
 
 C_DRIVER = r"""
 #include "model.h"
@@ -102,10 +108,19 @@ def build(model: str, work: Path) -> dict:
         (work / "model.cuh").write_text(gotran2cuda.get_code(ode, scheme=sch, format=CFormat.none,
                                                              namespace="model"))
         (work / "drv.cu").write_text(CU_DRIVER)
-        t = time.perf_counter()
-        subprocess.run(["nvcc", "-O3", "-arch=native", "-shared", "-Xcompiler", "-fPIC", "-I", str(work),
-                        "-o", str(work / "libcu.so"), str(work / "drv.cu")], check=True)
-        info["compile_nvcc_s"] = time.perf_counter() - t
+        base = ["nvcc", "-O3", "-arch=native", "-shared", "-Xcompiler", "-fPIC", "-I", str(work),
+                "-o", str(work / "libcu.so"), str(work / "drv.cu")]
+        # the host compiler only builds the launch stub; nvcc 12.6 rejects gcc > 13, so try
+        # clang first, then gcc with the version check off
+        for host in (["-ccbin", "clang"], ["-allow-unsupported-compiler"], []):
+            t = time.perf_counter()
+            r = subprocess.run(base[:1] + host + base[1:], capture_output=True, text=True)
+            if r.returncode == 0:
+                info["compile_nvcc_s"] = time.perf_counter() - t
+                info["nvcc_host"] = " ".join(host) or "default"
+                break
+        else:
+            raise subprocess.CalledProcessError(r.returncode, base, r.stderr[-800:])
         culib = ctypes.CDLL(str(work / "libcu.so"))
         culib.step.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_double, ctypes.c_void_p,
                                ctypes.c_void_p, ctypes.c_longlong, ctypes.c_int]
@@ -130,19 +145,24 @@ def run(model: str, cells: list[int]) -> dict:
             expect = ref[SCHEME](s, T, DT, p)
         r: dict = {"N": N}
 
-        r["numpy"] = timeit(lambda: ref[SCHEME](s, T, DT, p)) if N <= 10 ** 6 else None
+        if want("numpy"):
+            r["numpy"] = timeit(lambda: ref[SCHEME](s, T, DT, p))
 
         sc, oc = np.ascontiguousarray(s.T), np.empty((N, s.shape[0]))  # (N, ns) for C
         for key, f in (("c_1t", clib.step_serial), ("c_omp", clib.step_omp)):
+            if not want(key):
+                continue
             call = lambda: f(sc.ctypes.data, T, DT, p.ctypes.data, oc.ctypes.data, N)
             r[key] = timeit(call)
             r[key + "_err"] = relerr(oc.T, expect)
 
         out = np.empty_like(s)
         f = nb[SCHEME]
-        if N == cells[0]:
+        if N == cells[0] and (want("numba") or want("numba_1t")):
             t = time.perf_counter(); f(s, T, DT, p, out=out); info["compile_numba_cpu_s"] = time.perf_counter() - t
         for key, nt in (("numba_1t", 1), ("numba", NTHREADS)):
+            if not want(key):
+                continue
             numba.set_num_threads(nt)
             r[key] = timeit(lambda: f(s, T, DT, p, out=out))
             r[key + "_err"] = relerr(out, expect)
@@ -154,9 +174,10 @@ def run(model: str, cells: list[int]) -> dict:
             if N == cells[0]:
                 t = time.perf_counter(); g(sd, T, DT, pd, out=od); cuda.synchronize()
                 info["compile_numba_cuda_s"] = time.perf_counter() - t
-            r["numba_cuda"] = timeit(lambda: g(sd, T, DT, pd, out=od, threads=THREADS), cuda.synchronize)
-            r["numba_cuda_err"] = relerr(od.copy_to_host(), expect)
-            if culib is not None:
+            if want("numba_cuda"):
+                r["numba_cuda"] = timeit(lambda: g(sd, T, DT, pd, out=od, threads=THREADS), cuda.synchronize)
+                r["numba_cuda_err"] = relerr(od.copy_to_host(), expect)
+            if culib is not None and want("cuda_c"):
                 ptr = lambda a: a.__cuda_array_interface__["data"][0]
                 od2 = cuda.device_array_like(sd)
                 rc = []
@@ -168,8 +189,18 @@ def run(model: str, cells: list[int]) -> dict:
                          if k != "N" and not k.endswith("_err") and v is not None)
         print(f"{model} N {N:>8d} (ms/step): {line}", flush=True)
         rows.append(r)
-    out = {"model": model, "scheme": SCHEME, "cpu_threads": NTHREADS, **info, "rows": rows}
-    (HERE / f"native_{model}.json").write_text(json.dumps(out, indent=1))
+    path = HERE / f"native_{model}.json"
+    if ONLY and path.exists():  # merge into the earlier full run
+        old = json.loads(path.read_text())
+        byN = {r["N"]: r for r in old["rows"]}
+        for r in rows:
+            byN.setdefault(r["N"], {"N": r["N"]}).update(r)
+        old.update(info)
+        old["rows"] = [byN[n] for n in sorted(byN)]
+        out = old
+    else:
+        out = {"model": model, "scheme": SCHEME, "cpu_threads": NTHREADS, **info, "rows": rows}
+    path.write_text(json.dumps(out, indent=1))
     print(model, {k: round(v, 2) for k, v in info.items() if k.startswith("compile")}, flush=True)
     return out
 
