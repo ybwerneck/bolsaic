@@ -2,8 +2,8 @@
 
     python bench/bench.py [model] [N1,N2,...]
 
-Backends: numpy (gotranx's own vectorised code), numba CPU (prange), numba CUDA,
-torch CUDA, torch CUDA + torch.compile. Time per step = median over REPS
+Backends: numpy (gotranx's own vectorised code), numba CPU (prange), numba CUDA;
+torch CUDA and torch.compile only with BENCH_TORCH=1. Time per step = median over REPS
 steps after WARM warm-up steps (GPU timings synchronised). Each backend also
 reports its max relative deviation from numpy after the timed steps.
 """
@@ -38,7 +38,7 @@ def _exec(code):
 
 t0 = time.perf_counter()
 ref = _exec(numpy_code(ode, scheme=[gotranx.schemes.Scheme(SCHEME)], format=Format.none))
-tch = _exec(get_code(ode, backend="torch", scheme=[SCHEME], format=Format.none))
+tch = _exec(get_code(ode, backend="torch", scheme=[SCHEME], format=Format.none)) if os.environ.get("BENCH_TORCH") else {}
 nb = _exec(get_code(ode, backend="numba", scheme=[SCHEME], format=Format.none))
 print(f"{MODEL}: {ode.num_states} states, {ode.num_parameters} parameters; codegen {time.perf_counter() - t0:.1f} s",
       flush=True)
@@ -98,11 +98,13 @@ for N in NS:
         res["numba_cuda_compile_s"] = jit
         res["numba_cuda_err"] = float(np.max(np.abs(yd.copy_to_host() - ref_s) / (np.abs(ref_s) + 1e-12)))
 
-    try:
-        import torch
-        have_torch = torch.cuda.is_available()
-    except Exception:
-        have_torch = False
+    have_torch = False
+    if os.environ.get("BENCH_TORCH"):  # torch backend on hold; opt in with BENCH_TORCH=1
+        try:
+            import torch
+            have_torch = torch.cuda.is_available()
+        except Exception:
+            pass
     if have_torch:
         st, pt = torch.as_tensor(s, device="cuda"), torch.as_tensor(p, device="cuda")
         variants = [("torch_cuda", tch[SCHEME])]

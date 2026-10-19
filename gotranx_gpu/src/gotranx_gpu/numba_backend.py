@@ -3,6 +3,9 @@
 * ``<name>(...)``       CPU, ``numba.njit(parallel=True)``, ``prange`` over cells
 * ``<name>_cuda(...)``  GPU, ``numba.cuda.jit`` kernel, one thread per cell
 
+With ``cache=True`` both are compiled with numba's on-disk cache (the generated
+module must then be imported from a file, not exec'd from a string).
+
 States are ``(num_states, N)`` (cell index last, coalesced on the GPU);
 parameters are ``(num_parameters,)`` shared by all cells, or
 ``(num_parameters, N)`` per cell when generated with ``per_cell_parameters``.
@@ -81,18 +84,19 @@ class NumbaScalarPrinter(PythonCodePrinter):
 
 
 class NumbaCodeGenerator(PythonCodeGenerator):
-    def __init__(self, *args, per_cell_parameters: bool = False, **kwargs) -> None:
+    def __init__(self, *args, per_cell_parameters: bool = False, cache: bool = False,
+                 **kwargs) -> None:
         kwargs.setdefault("format", Format.none)
         super().__init__(*args, **kwargs)
         self._printer = NumbaScalarPrinter(per_cell_parameters=per_cell_parameters)
-        self.per_cell_parameters = per_cell_parameters
+        self._template = numba_template.NumbaTemplate(per_cell_parameters, cache)
 
     def imports(self) -> str:
         return numba_template.imports()
 
     @property
     def template(self):
-        return numba_template
+        return self._template
 
     def _shape_info(self, shape) -> str:
         return ""
