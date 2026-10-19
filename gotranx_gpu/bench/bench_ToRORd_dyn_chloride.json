@@ -1,0 +1,70 @@
+{
+ "model": "ToRORd_dyn_chloride",
+ "scheme": "generalized_rush_larsen",
+ "rows": [
+  {
+   "N": 1000,
+   "numpy": 0.00456034950184403,
+   "numba_cpu": 0.0002252455014968291,
+   "numba_cpu_compile_s": 32.55763882899919,
+   "numba_cpu_err": 0.0,
+   "numba_cuda": 0.0005493795033544302,
+   "numba_cuda_compile_s": 18.47756485100399,
+   "numba_cuda_err": 2.364462777202809e-16,
+   "torch_cuda": 0.021581079505267553,
+   "torch_cuda_first_call_s": 0.1063594200022635,
+   "torch_cuda_err": 7.11359313745533e-13,
+   "torch_compile": 0.001097723998100264,
+   "torch_compile_first_call_s": 52.35755502999382,
+   "torch_compile_err": 7.11359313745533e-13
+  },
+  {
+   "N": 10000,
+   "numpy": 0.04057106350228423,
+   "numba_cpu": 0.0019571179982449394,
+   "numba_cpu_compile_s": 0.004614708996086847,
+   "numba_cpu_err": 0.0,
+   "numba_cuda": 0.0009613594993425068,
+   "numba_cuda_compile_s": 0.001309423998463899,
+   "numba_cuda_err": 2.364462777202809e-16,
+   "torch_cuda": 0.022050522497011116,
+   "torch_cuda_first_call_s": 0.02438730800349731,
+   "torch_cuda_err": 7.11359313745533e-13,
+   "torch_compile": 0.005578448999585817,
+   "torch_compile_first_call_s": 32.000598989005084,
+   "torch_compile_err": 7.11359313745533e-13
+  },
+  {
+   "N": 100000,
+   "numpy": 0.4589716180016694,
+   "numba_cpu": 0.020482716499827802,
+   "numba_cpu_compile_s": 0.048912890000792686,
+   "numba_cpu_err": 0.0,
+   "numba_cuda": 0.009351980497740442,
+   "numba_cuda_compile_s": 0.0095476329952362,
+   "numba_cuda_err": 2.364462777202809e-16,
+   "torch_cuda": 0.022819729001639644,
+   "torch_cuda_first_call_s": 0.0348540539998794,
+   "torch_cuda_err": 7.11359313745533e-13,
+   "torch_compile": 0.06475603899889393,
+   "torch_compile_first_call_s": 34.76904088300216,
+   "torch_compile_err": 7.11359313745533e-13
+  },
+  {
+   "N": 1000000,
+   "numpy": 5.282612669998343,
+   "numba_cpu": 0.20505575750212302,
+   "numba_cpu_compile_s": 0.32103416500467574,
+   "numba_cpu_err": 0.0,
+   "numba_cuda": 0.07886286799839581,
+   "numba_cuda_compile_s": 0.08823160899919458,
+   "numba_cuda_err": 2.364462777202809e-16,
+   "torch_cuda": 0.12858842649802682,
+   "torch_cuda_first_call_s": 0.13000499999907333,
+   "torch_cuda_err": 7.11359313745533e-13,
+   "torch_compile": 0.6436852625010943,
+   "torch_compile_first_call_s": 36.012321891998,
+   "torch_compile_err": 7.11359313745533e-13
+  }
+ ]
+}
