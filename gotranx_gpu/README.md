@@ -40,13 +40,31 @@ for n in range(1000):
 
 From Python: `gotranx_gpu.get_code(ode, backend="torch"|"numba", scheme=[...])`.
 
+## Compile time
+
+From `.ode` file to running machine code there are three stages; the first two are
+paid on every fresh process unless the numba cache is used (`--cache`, or
+`get_code(..., cache=True)` and import the generated module from a file).
+
+| model (states) | load + codegen (gotranx) | numba front end | LLVM | CPU total | CUDA first launches | with cache (new process) |
+|---|---|---|---|---|---|---|
+| ToRORd (52) | 6.6 + 11.0 s | 45.7 s | 5.9 s | 51.6 s | 30.4 s | 0.4 + 0.3 + 0.1 s |
+| ORd-Land (48) | 4.0 + 7.9 s | 24.1 s | 4.1 s | 28.2 s | 17.5 s | 0.3 + 0.3 + 0.1 s |
+| ten Tusscher (19) | 0.7 + 1.8 s | 5.0 s | 1.2 s | 6.2 s | 5.0 s | 0.4 + 0.3 + 0.1 s |
+| Beeler–Reuter (8) | 1.3 + 2.0 s | 2.0 s | 0.7 s | 2.8 s | 1.8 s | 0.3 + 0.2 + 0.1 s |
+
+rhs + monitor_values + generalized_rush_larsen; node .119 (RTX 4070); `bench/compile_time.py`,
+results in `bench/compile_time.json`. Cache column: import + CPU first calls + CUDA first calls.
+
 ## Layout
 
 - `src/gotranx_gpu/torch_backend.py`, `torch_template.py`: printer (`numpy.*` → `torch.*`, constant sub-expressions → `math.*`, `Piecewise` → `torch.where`) and templates.
 - `src/gotranx_gpu/numba_backend.py`, `numba_template.py`: scalar printer (`math.*`, ternaries, `states[k, _i]`) and the CPU/CUDA wrappers.
 - `src/gotranx_gpu/generate.py`: `get_code` and the CLI (`python -m gotranx_gpu`).
-- `tests/test_equivalence.py`: each backend against gotranx's numpy code on 257 perturbed cells (rhs, monitors, explicit Euler and generalized Rush–Larsen steps; rtol 1e-10), five models.
-- `bench/bench.py`: time per generalized Rush–Larsen step vs number of cells, per backend.
+- `tests/test_models.py`: numba CPU and CUDA against gotranx's numpy code, every model in `odefiles/` (rhs, monitors, three schemes, single cell, in-place step, trailing CUDA threads).
+- `tests/test_edge_cases.py`: gotranx's own edge cases (Min/Max kinks, conditionals, removable poles, missing variables, missing_values, stiff states, remove_unused) through numba CPU and CUDA. 114 tests, all passing on node .119.
+- `bench/bench.py`: time per generalized Rush–Larsen step vs number of cells, per backend (torch only with `BENCH_TORCH=1`).
+- `bench/compile_time.py`: time of each stage from `.ode` to machine code, with and without the numba cache.
 - `odefiles/`: models from the gotranx repository (MIT, H. Finsberg).
 
 ## Environment (MMC cluster)

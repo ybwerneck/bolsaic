@@ -1,0 +1,692 @@
+[
+ {
+  "model": "ORdmm_Land",
+  "mode": "nocache",
+  "load_s": 3.991182754005422,
+  "num_states": 48,
+  "num_parameters": 139,
+  "codegen_s": 7.91153337200376,
+  "source_lines": 4860,
+  "import_s": 0.6365768059986294,
+  "cpu_rhs": {
+   "first_call_s": 4.967524503997993,
+   "run_s": 0.00020970400510123,
+   "compile_s": 4.9274545760054025,
+   "llvm_s": 0.7898846358293667,
+   "frontend_s": 4.137569940176036
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 6.210741650997079,
+   "run_s": 0.0003804439984378405,
+   "compile_s": 6.209919594002713,
+   "llvm_s": 1.394713618014066,
+   "frontend_s": 4.815205975988647
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 17.033988324998063,
+   "run_s": 0.0003491389943519607,
+   "compile_s": 17.03340499699698,
+   "llvm_s": 1.8879120270721614,
+   "frontend_s": 15.145492969924817
+  },
+  "cuda_rhs": {
+   "first_call_s": 3.537200730999757,
+   "run_s": 0.00035213599767303094
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 4.50383614400198,
+   "run_s": 0.0005043420023866929
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 9.46406332499464,
+   "run_s": 0.0006191299980855547
+  }
+ },
+ {
+  "model": "ORdmm_Land",
+  "mode": "cache_cold",
+  "load_s": 3.9485284600013983,
+  "num_states": 48,
+  "num_parameters": 139,
+  "codegen_s": 7.864566616000957,
+  "source_lines": 4860,
+  "import_s": 0.43775540299975546,
+  "cpu_rhs": {
+   "first_call_s": 5.095039829000598,
+   "run_s": 0.0002098539989674464,
+   "compile_s": 5.068775382998865,
+   "llvm_s": 0.7929276508730254,
+   "frontend_s": 4.27584773212584
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 6.744032928996603,
+   "run_s": 0.000356746997567825,
+   "compile_s": 6.743200632998196,
+   "llvm_s": 1.3922041550613358,
+   "frontend_s": 5.35099647793686
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 17.239532897998288,
+   "run_s": 0.000320661005389411,
+   "compile_s": 17.23895347499638,
+   "llvm_s": 1.8801641754980665,
+   "frontend_s": 15.358789299498312
+  },
+  "cuda_rhs": {
+   "first_call_s": 3.058460093998292,
+   "run_s": 0.0003448509960435331
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 3.4127867170027457,
+   "run_s": 0.000487757999508176
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 7.11522378600057,
+   "run_s": 0.0006017310006427579
+  }
+ },
+ {
+  "model": "ORdmm_Land",
+  "mode": "cache_warm",
+  "import_s": 0.2858438510011183,
+  "cpu_rhs": {
+   "first_call_s": 0.2563892580001266,
+   "run_s": 0.00017963299615075812
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.004681389997131191,
+   "run_s": 0.0010724860039772466
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.0042326269976911135,
+   "run_s": 0.00026908699510386214
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.12629141100478591,
+   "run_s": 0.0003306299986434169
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.003154380996420514,
+   "run_s": 0.00036274299782235175
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.00528768799995305,
+   "run_s": 0.0005254900024738163
+  }
+ },
+ {
+  "model": "ToRORd_dyn_chloride",
+  "mode": "nocache",
+  "load_s": 6.62450870199973,
+  "num_states": 52,
+  "num_parameters": 144,
+  "codegen_s": 10.954443168004218,
+  "source_lines": 5415,
+  "import_s": 0.47134308599925134,
+  "cpu_rhs": {
+   "first_call_s": 8.321769866997784,
+   "run_s": 0.00025712500064400956,
+   "compile_s": 8.29249278500356,
+   "llvm_s": 1.0003017611743417,
+   "frontend_s": 7.2921910238292185
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 10.473057326998969,
+   "run_s": 0.0004504410026129335,
+   "compile_s": 10.471781300002476,
+   "llvm_s": 1.7972980752456351,
+   "frontend_s": 8.674483224756841
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 32.776375866997114,
+   "run_s": 0.0003861110017169267,
+   "compile_s": 32.775674869000795,
+   "llvm_s": 3.0595589157674112,
+   "frontend_s": 29.716115953233384
+  },
+  "cuda_rhs": {
+   "first_call_s": 5.334122036001645,
+   "run_s": 0.0004056630059494637
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 6.549737564004317,
+   "run_s": 0.0005102860013721511
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 18.5340587019964,
+   "run_s": 0.0011418099966249429
+  }
+ },
+ {
+  "model": "ToRORd_dyn_chloride",
+  "mode": "cache_cold",
+  "load_s": 6.711311995997676,
+  "num_states": 52,
+  "num_parameters": 144,
+  "codegen_s": 10.977874085001531,
+  "source_lines": 5415,
+  "import_s": 0.6533563419943675,
+  "cpu_rhs": {
+   "first_call_s": 8.693149348997395,
+   "run_s": 0.0002563960006227717,
+   "compile_s": 8.65073951499653,
+   "llvm_s": 1.0067557299189502,
+   "frontend_s": 7.64398378507758
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 11.109547143998498,
+   "run_s": 0.0004916710022371262,
+   "compile_s": 11.108284221001668,
+   "llvm_s": 1.8010084425550303,
+   "frontend_s": 9.307275778446638
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 33.21012750599766,
+   "run_s": 0.0003801420025411062,
+   "compile_s": 33.20952772899909,
+   "llvm_s": 3.0393615781795233,
+   "frontend_s": 30.17016615081957
+  },
+  "cuda_rhs": {
+   "first_call_s": 4.284147979000409,
+   "run_s": 0.00038245500036282465
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 5.150892867000948,
+   "run_s": 0.0005167189956409857
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 15.921445590000076,
+   "run_s": 0.0007957280031405389
+  }
+ },
+ {
+  "model": "ToRORd_dyn_chloride",
+  "mode": "cache_warm",
+  "import_s": 0.397176472004503,
+  "cpu_rhs": {
+   "first_call_s": 0.2845333439981914,
+   "run_s": 0.00015955200069583952
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.005037037997681182,
+   "run_s": 0.0011876110002049245
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.004720078999525867,
+   "run_s": 0.00035536399809643626
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.12705465299950447,
+   "run_s": 0.0003527890003169887
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.0035772459959844127,
+   "run_s": 0.00041431000136071816
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.0060797109981649555,
+   "run_s": 0.0006730759996571578
+  }
+ },
+ {
+  "model": "beeler_reuter_1977",
+  "mode": "nocache",
+  "load_s": 1.2829967029974796,
+  "num_states": 8,
+  "num_parameters": 10,
+  "codegen_s": 2.0060926810037927,
+  "source_lines": 595,
+  "import_s": 0.2777837149988045,
+  "cpu_rhs": {
+   "first_call_s": 0.8870702929998515,
+   "run_s": 0.00012946600327268243,
+   "compile_s": 0.8768589150058688,
+   "llvm_s": 0.23582359225838445,
+   "frontend_s": 0.6410353227474843
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.6897133649981697,
+   "run_s": 0.00010888899851124734,
+   "compile_s": 0.6893801959959092,
+   "llvm_s": 0.18508502678741934,
+   "frontend_s": 0.5042951692084898
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 1.1937853769995854,
+   "run_s": 0.00012350900215096772,
+   "compile_s": 1.1934549510042416,
+   "llvm_s": 0.3203708989021834,
+   "frontend_s": 0.8730840521020582
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.650626855000155,
+   "run_s": 0.00018931099475594237
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.4849045320006553,
+   "run_s": 0.00018842700228560716
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.6745043319970137,
+   "run_s": 0.000196328001038637
+  }
+ },
+ {
+  "model": "beeler_reuter_1977",
+  "mode": "cache_cold",
+  "load_s": 1.245864946002257,
+  "num_states": 8,
+  "num_parameters": 10,
+  "codegen_s": 1.9919526720041176,
+  "source_lines": 595,
+  "import_s": 0.27445519500179216,
+  "cpu_rhs": {
+   "first_call_s": 0.9026532490024692,
+   "run_s": 0.00012427700130501762,
+   "compile_s": 0.891847103004693,
+   "llvm_s": 0.23662336983397836,
+   "frontend_s": 0.6552237331707147
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.7397072659950936,
+   "run_s": 0.00011947500024689361,
+   "compile_s": 0.7394081890015514,
+   "llvm_s": 0.18609091590769822,
+   "frontend_s": 0.5533172730938531
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 1.2243651269964175,
+   "run_s": 0.0001813039998523891,
+   "compile_s": 1.2240522199936095,
+   "llvm_s": 0.3196144782486954,
+   "frontend_s": 0.9044377417449141
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.5212749119964428,
+   "run_s": 0.00017521900008432567
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.3260675600031391,
+   "run_s": 0.00016080800560303032
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.49020485999790253,
+   "run_s": 0.0001746600028127432
+  }
+ },
+ {
+  "model": "beeler_reuter_1977",
+  "mode": "cache_warm",
+  "import_s": 0.27456417200301075,
+  "cpu_rhs": {
+   "first_call_s": 0.2132734009937849,
+   "run_s": 8.904900460038334e-05
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.002232430000731256,
+   "run_s": 6.531400140374899e-05
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.0024935110050137155,
+   "run_s": 6.241400114959106e-05
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.12363224300497677,
+   "run_s": 0.00017071800539270043
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.0009201229986501858,
+   "run_s": 0.00011840400111395866
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.0007637110029463656,
+   "run_s": 0.00012099999730708078
+  }
+ },
+ {
+  "model": "fitzhughnagumo",
+  "mode": "nocache",
+  "load_s": 0.10588652700243983,
+  "num_states": 2,
+  "num_parameters": 11,
+  "codegen_s": 0.17008088800503174,
+  "source_lines": 368,
+  "import_s": 0.2555858529958641,
+  "cpu_rhs": {
+   "first_call_s": 0.4751618239970412,
+   "run_s": 4.663800064008683e-05,
+   "compile_s": 0.4647478240003693,
+   "llvm_s": 0.12041498607868562,
+   "frontend_s": 0.3443328379216837
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.2512205159946461,
+   "run_s": 3.238600038457662e-05,
+   "compile_s": 0.25106587399932323,
+   "llvm_s": 0.12536935071693733,
+   "frontend_s": 0.1256965232823859
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.36216279600193957,
+   "run_s": 4.990699380869046e-05,
+   "compile_s": 0.3619961049989797,
+   "llvm_s": 0.13217080794129288,
+   "frontend_s": 0.22982529705768684
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.2942110770018189,
+   "run_s": 0.00017825900431489572
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.14663637799822027,
+   "run_s": 0.00015963800251483917
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.18200902199896518,
+   "run_s": 0.0001601510011823848
+  }
+ },
+ {
+  "model": "fitzhughnagumo",
+  "mode": "cache_cold",
+  "load_s": 0.10404646299866727,
+  "num_states": 2,
+  "num_parameters": 11,
+  "codegen_s": 0.17014756499702344,
+  "source_lines": 368,
+  "import_s": 0.25457441600156017,
+  "cpu_rhs": {
+   "first_call_s": 0.48238280700024916,
+   "run_s": 3.904199547832832e-05,
+   "compile_s": 0.47204219599370845,
+   "llvm_s": 0.12142627591674682,
+   "frontend_s": 0.35061592007696163
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.27466078399447724,
+   "run_s": 2.355600008741021e-05,
+   "compile_s": 0.27449737999995705,
+   "llvm_s": 0.1266098920168588,
+   "frontend_s": 0.14788748798309825
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.38169384600041667,
+   "run_s": 2.787300036288798e-05,
+   "compile_s": 0.38151730399840744,
+   "llvm_s": 0.13272028345818399,
+   "frontend_s": 0.24879702054022346
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.24206246299581835,
+   "run_s": 0.00016102300287457183
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.09636585599946557,
+   "run_s": 0.00015203299699351192
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.12488159799977439,
+   "run_s": 0.00014941400149837136
+  }
+ },
+ {
+  "model": "fitzhughnagumo",
+  "mode": "cache_warm",
+  "import_s": 0.2811423419989296,
+  "cpu_rhs": {
+   "first_call_s": 0.2117982099953224,
+   "run_s": 3.341599949635565e-05
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.001849986998422537,
+   "run_s": 1.6573001630604267e-05
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.0018464530003257096,
+   "run_s": 2.2843996703159064e-05
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.12543523500062292,
+   "run_s": 0.00015805300063220784
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.00074981900252169,
+   "run_s": 9.613599831936881e-05
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.0005319999982020818,
+   "run_s": 9.185200178762898e-05
+  }
+ },
+ {
+  "model": "lorentz",
+  "mode": "nocache",
+  "load_s": 0.09047885900508845,
+  "num_states": 3,
+  "num_parameters": 3,
+  "codegen_s": 0.19482470000366447,
+  "source_lines": 302,
+  "import_s": 0.26028083699929994,
+  "cpu_rhs": {
+   "first_call_s": 0.4436247880003066,
+   "run_s": 3.645799733931199e-05,
+   "compile_s": 0.4326294729980873,
+   "llvm_s": 0.13420428201789036,
+   "frontend_s": 0.29842519098019693
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.1980043720031972,
+   "run_s": 2.9928996809758246e-05,
+   "compile_s": 0.19784201699803816,
+   "llvm_s": 0.122256054841273,
+   "frontend_s": 0.07558596215676516
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.3628940979979234,
+   "run_s": 4.5692999265156686e-05,
+   "compile_s": 0.36273547600285383,
+   "llvm_s": 0.18130882026889594,
+   "frontend_s": 0.1814266557339579
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.23363978500128724,
+   "run_s": 0.00017093499627662823
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.07037813900387846,
+   "run_s": 0.0001700610009720549
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.11899321500095539,
+   "run_s": 0.00016541200602659956
+  }
+ },
+ {
+  "model": "lorentz",
+  "mode": "cache_cold",
+  "load_s": 0.08851900699664839,
+  "num_states": 3,
+  "num_parameters": 3,
+  "codegen_s": 0.19424116200389108,
+  "source_lines": 302,
+  "import_s": 0.25687506800022675,
+  "cpu_rhs": {
+   "first_call_s": 0.4494574179989286,
+   "run_s": 4.0772996726445854e-05,
+   "compile_s": 0.43855401600012556,
+   "llvm_s": 0.13534742387128063,
+   "frontend_s": 0.30320659212884493
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.21122876099980203,
+   "run_s": 2.5096996978390962e-05,
+   "compile_s": 0.211081658002513,
+   "llvm_s": 0.12327417392953066,
+   "frontend_s": 0.08780748407298233
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.37689930600026855,
+   "run_s": 3.782199928537011e-05,
+   "compile_s": 0.3767380530043738,
+   "llvm_s": 0.18229332110786345,
+   "frontend_s": 0.19444473189651035
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.2025756330040167,
+   "run_s": 0.00015467200137209147
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.05053308000060497,
+   "run_s": 0.00016867699741851538
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.08234195900149643,
+   "run_s": 0.00014415199984796345
+  }
+ },
+ {
+  "model": "lorentz",
+  "mode": "cache_warm",
+  "import_s": 0.2801959749995149,
+  "cpu_rhs": {
+   "first_call_s": 0.20881197700509802,
+   "run_s": 2.5574998289812356e-05
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.0018624240037752315,
+   "run_s": 2.558500273153186e-05
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.0020108320022700354,
+   "run_s": 2.360199869144708e-05
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.14672224399691913,
+   "run_s": 0.00015201999485725537
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.0006601289933314547,
+   "run_s": 0.00010112900054082274
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.0005015459973947145,
+   "run_s": 9.530299575999379e-05
+  }
+ },
+ {
+  "model": "tentusscher_panfilov_2006_M_cell",
+  "mode": "nocache",
+  "load_s": 0.7188358569983393,
+  "num_states": 19,
+  "num_parameters": 53,
+  "codegen_s": 1.8270298920033383,
+  "source_lines": 1655,
+  "import_s": 0.26732704100140836,
+  "cpu_rhs": {
+   "first_call_s": 1.7291592370020226,
+   "run_s": 0.00014218699652701616,
+   "compile_s": 1.7182968289998826,
+   "llvm_s": 0.3074736049165949,
+   "frontend_s": 1.4108232240832876
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 1.7402555329972529,
+   "run_s": 0.00019871700351359323,
+   "compile_s": 1.7398500580020482,
+   "llvm_s": 0.4291093466745224,
+   "frontend_s": 1.3107407113275258
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 2.7541675480024423,
+   "run_s": 0.00018956100393552333,
+   "compile_s": 2.753733227997145,
+   "llvm_s": 0.45445271285279887,
+   "frontend_s": 2.2992805151443463
+  },
+  "cuda_rhs": {
+   "first_call_s": 1.4255874540031073,
+   "run_s": 0.00027448699984233826
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 1.38163454199821,
+   "run_s": 0.0002725630038185045
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 2.1701698179967934,
+   "run_s": 0.0003486869973130524
+  }
+ },
+ {
+  "model": "tentusscher_panfilov_2006_M_cell",
+  "mode": "cache_cold",
+  "load_s": 0.7069018649999634,
+  "num_states": 19,
+  "num_parameters": 53,
+  "codegen_s": 1.8280936529990868,
+  "source_lines": 1655,
+  "import_s": 0.2656831770000281,
+  "cpu_rhs": {
+   "first_call_s": 1.826593302001129,
+   "run_s": 0.00019896299636457115,
+   "compile_s": 1.8158169300004374,
+   "llvm_s": 0.3095822491304716,
+   "frontend_s": 1.5062346808699658
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 1.9349163730003056,
+   "run_s": 0.00016784200124675408,
+   "compile_s": 1.9344551670001238,
+   "llvm_s": 0.43074304799665697,
+   "frontend_s": 1.5037121190034668
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 2.8806558590003988,
+   "run_s": 0.00020489899907261133,
+   "compile_s": 2.880228588001046,
+   "llvm_s": 0.4552981520391768,
+   "frontend_s": 2.424930435961869
+  },
+  "cuda_rhs": {
+   "first_call_s": 1.0643554800044512,
+   "run_s": 0.0002614859986351803
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.9825626710007782,
+   "run_s": 0.0002563399975770153
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 1.552984383997682,
+   "run_s": 0.00034660899837035686
+  }
+ },
+ {
+  "model": "tentusscher_panfilov_2006_M_cell",
+  "mode": "cache_warm",
+  "import_s": 0.3800425189983798,
+  "cpu_rhs": {
+   "first_call_s": 0.2748683259997051,
+   "run_s": 0.00013690400373889133
+  },
+  "cpu_monitor_values": {
+   "first_call_s": 0.0027907330004381947,
+   "run_s": 8.596200495958328e-05
+  },
+  "cpu_generalized_rush_larsen": {
+   "first_call_s": 0.0026131660051760264,
+   "run_s": 0.00010024999937741086
+  },
+  "cuda_rhs": {
+   "first_call_s": 0.12498366799991345,
+   "run_s": 0.0002481600022292696
+  },
+  "cuda_monitor_values": {
+   "first_call_s": 0.0014313319989014417,
+   "run_s": 0.00020526299340417609
+  },
+  "cuda_generalized_rush_larsen": {
+   "first_call_s": 0.0014209739965735935,
+   "run_s": 0.0002901150000980124
+  }
+ }
+]
