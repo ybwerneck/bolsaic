@@ -40,6 +40,21 @@ for n in range(1000):
 
 From Python: `gotranx_gpu.get_code(ode, backend="torch"|"numba", scheme=[...])`.
 
+## Against the native gotranx backends
+
+One generalized Rush–Larsen step over 10⁶ cells, ms (node .119: 12 CPU cores, RTX 4070;
+`bench/native.py`, results in `bench/native_*.json`). Native C is gotranx's `ode2c`
+per-cell function in a C loop (gcc -O3 -march=native, OpenMP for 12 threads); native
+CUDA is `ode2cuda` (nvcc -O3, host compiler clang). All agree with numpy to ≤ 1.2e-13.
+
+| model (states) | numpy | C 1 thread | numba 1 thread | C 12 threads | numba 12 threads | CUDA C | numba CUDA |
+|---|---|---|---|---|---|---|---|
+| Beeler–Reuter (8) | 505 | 184 | 160 | 30.6 | 27.3 | 7.1 | 6.0 |
+| ten Tusscher (19) | 1216 | 512 | 438 | 84.1 | 71.1 | 31.9 | 28.7 |
+| ToRORd (52) | 5242 | 1723 | 1216 | 278 | 205 | 82.1 | 79.0 |
+
+Compile, ToRORd: gcc 1.0 s, nvcc 7.0 s, numba CPU 32 s, numba CUDA 15 s (under 1 s from the cache).
+
 ## Compile time
 
 From `.ode` file to running machine code there are three stages; the first two are
@@ -64,6 +79,7 @@ results in `bench/compile_time.json`. Cache column: import + CPU first calls + C
 - `tests/test_models.py`: numba CPU and CUDA against gotranx's numpy code, every model in `odefiles/` (rhs, monitors, three schemes, single cell, in-place step, trailing CUDA threads).
 - `tests/test_edge_cases.py`: gotranx's own edge cases (Min/Max kinks, conditionals, removable poles, missing variables, missing_values, stiff states, remove_unused) through numba CPU and CUDA. 114 tests, all passing on node .119.
 - `bench/bench.py`: time per generalized Rush–Larsen step vs number of cells, per backend (torch only with `BENCH_TORCH=1`).
+- `bench/native.py`: numba against gotranx's native numpy, C (serial / OpenMP) and CUDA C.
 - `bench/compile_time.py`: time of each stage from `.ode` to machine code, with and without the numba cache.
 - `odefiles/`: models from the gotranx repository (MIT, H. Finsberg).
 
