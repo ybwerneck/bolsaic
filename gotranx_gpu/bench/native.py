@@ -110,9 +110,11 @@ def build(model: str, work: Path) -> dict:
         (work / "drv.cu").write_text(CU_DRIVER)
         base = ["nvcc", "-O3", "-arch=native", "-shared", "-Xcompiler", "-fPIC", "-I", str(work),
                 "-o", str(work / "libcu.so"), str(work / "drv.cu")]
-        # the host compiler only builds the launch stub; nvcc 12.6 rejects gcc > 13, so try
-        # clang first, then gcc with the version check off
-        for host in (["-ccbin", "clang"], ["-allow-unsupported-compiler"], []):
+        # the host compiler only builds the launch stub; nvcc 12.6 rejects gcc > 13 (and gcc 14's
+        # headers break it even unchecked), so clang, with a bracket depth for ToRORd's deepest
+        # expression (clang's default limit is 256)
+        for host in (["-ccbin", "clang", "-Xcompiler", "-fbracket-depth=4096"],
+                     ["-allow-unsupported-compiler"], []):
             t = time.perf_counter()
             r = subprocess.run(base[:1] + host + base[1:], capture_output=True, text=True)
             if r.returncode == 0:
