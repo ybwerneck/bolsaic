@@ -75,14 +75,16 @@ def maps_figure(kind, fn):
     cols = [('verdade (FIM)', None, None)]
     for tag, names, st, rows in (('A', nA, sA, rA), ('B', nB, sB, rB)):
         pass
-    fig, axs = plt.subplots(2, 5, figsize=(12.5, 5.8))
+    ncol = 4 if kind == 'lat' else 3
+    fig, axs = plt.subplots(2, ncol, figsize=(2.55 * ncol, 5.8))
     for i, (tag, names, st, rows) in enumerate((('A', nA, sA, rA), ('B', nB, sB, rB))):
         start = names[2]
         panels = [('verdade (FIM)', tau_true, None),
-                  ('$g_0$ = verdade em $S$', st[names[0]]['tau'], rows[names[0]]),
                   ('rede no início', st[start]['tau'], rows[start]),
                   ('+ inverso ECG, passo 1e-4', st[ecg_key(1e-4)]['tau'], rows[ecg_key(1e-4)]),
                   ('+ inverso ECG, passo 5e-4', st[ecg_key(5e-4)]['tau'], rows[ecg_key(5e-4)])]
+        if kind != 'lat':
+            panels = panels[1:]  # the truth has no error
         for j, (ttl, tau, r) in enumerate(panels):
             ax = axs[i, j]
             if kind == 'lat':
