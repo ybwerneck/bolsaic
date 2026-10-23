@@ -130,12 +130,8 @@ def med(tag, lr, s, ph, key):
     return float(np.median(v)) if v else np.nan
 
 
-# what the weight noise does to g: rms change of the start network's g on the dominant
-# candidates, per start (the same sigma moves A and B by different amounts)
-shift = {(t, s): np.median([r['start']['dg_dom'] for r in R if r['sigma'] == s and r['tag'] == t])
-         for t in ('A', 'B') for s in SIG}
 x = np.arange(len(SIG))
-xt = [f"{s:g}\nA {shift[('A', s)]:.0f}\nB {shift[('B', s)]:.0f}" for s in SIG]
+xt = [f'{s:g}' for s in SIG]
 fig, axs = plt.subplots(1, 3, figsize=(12.5, 4.6))
 STY = {(1e-4, 'A'): (ORANGE, '-', 'o'), (5e-4, 'A'): (ORANGE, '--', 's'),
        (1e-4, 'B'): (BLUE, '-', 'o'), (5e-4, 'B'): (BLUE, '--', 's')}
@@ -146,8 +142,8 @@ for ax, key, yl, lg in ((axs[0], 'ecg', 'erro do ECG (log)', True), (axs[1], 'ma
             c, ls, mk = STY[(lr, tag)]
             ax.plot(x, [med(tag, lr, s, 'end', key) for s in SIG], ls, color=c, marker=mk, lw=2, ms=6,
                     mec='white', mew=1, label=f'início {tag}, passo {fmt_e(lr)}')
-    ax.set_xticks(x); ax.set_xticklabels(xt, fontsize=10.5)
-    ax.set_xlabel('ruído $\\sigma$ nos pesos da rede\n(deslocamento de $g$ resultante, ms)'); ax.set_ylabel(yl)
+    ax.set_xticks(x); ax.set_xticklabels(xt, fontsize=11)
+    ax.set_xlabel('ruído $\\sigma$ nos pesos da rede'); ax.set_ylabel(yl)
     ax.grid(color=GRID, lw=.6)
     for s_ in ('top', 'right'):
         ax.spines[s_].set_visible(False)
